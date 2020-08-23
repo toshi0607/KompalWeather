@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	"github.com/toshi0607/kompal-weather/pkg/status"
+	"gopkg.in/Iwark/spreadsheet.v2"
 
 	"golang.org/x/oauth2/google"
 )
@@ -13,13 +14,19 @@ import (
 var _ Storage = (*Sheets)(nil)
 
 //https://developers.google.com/sheets/api/quickstart/go?authuser=1
-//https://developers.google.com/sheets/api/quickstart/go?authuser=1
+//https://github.com/Iwark/spreadsheet
+
+const (
+	spreadSheetID = ""
+	sheetId       = 120
+)
 
 type Sheets struct {
 	service *spreadsheet.Service
 }
 
-func NewSheetsClient() (*Sheets, error) {
+func NewSheets() (*Sheets, error) {
+	//https://github.com/golang/oauth2/blob/master/google/default.go 自分のdefaultかCloud RunのSAがいいなぁ…
 	data, err := ioutil.ReadFile("client_secret.json")
 	if err != nil {
 		return nil, err
@@ -37,14 +44,20 @@ func NewSheetsClient() (*Sheets, error) {
 	}, nil
 }
 
-func (s *Sheets) Statuses() ([]status.Status, error) {
-	const id = ""
-	ss, _ := s.service.FetchSpreadsheet(id)
+func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
+	ss, err := s.service.FetchSpreadsheet(spreadSheetID)
+	if err != nil {
+		return nil, err
+	}
 
-	var sheetId uint = 120
-	sheet, _ := ss.SheetByID(sheetId)
+	sheet, err := ss.SheetByID(sheetId)
+	if err != nil {
+		return nil, err
+	}
+	//l := sheet.Rows
+	//l[0][0].Value
 
-	currentRow := sheet.Rows[:len(sheet.Rows)-1]
+	currentRow := sheet.Rows[:len(sheet.Rows)-1][0]
 	cMale := currentRow[0]
 	cFemale := currentRow[1]
 	cDt := currentRow[2]
@@ -54,9 +67,13 @@ func (s *Sheets) Statuses() ([]status.Status, error) {
 	pFemale := previousRow[1]
 	pDt := previousRow[2]
 	fmt.Print(cMale, cFemale, cDt, pMale, pFemale, pDt)
-	return nil, nil
+	return []status.Status{
+		//{
+		//	Male: cMale.Value,
+		//},
+	}, nil
 }
 
-func (s *Sheets) Save(st status.Status) error {
+func (s *Sheets) Save(ctx context.Context, st *status.Status) error {
 	panic("implement me")
 }

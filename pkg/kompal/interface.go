@@ -1,7 +1,11 @@
 package kompal
 
-import "github.com/toshi0607/kompal-weather/pkg/status"
+import (
+	"context"
 
-type fetcher interface {
-	Fetch() (*status.Status, error)
+	"github.com/toshi0607/kompal-weather/pkg/status"
+)
+
+type Fetcher interface {
+	Fetch(ctx context.Context) (*status.Status, error)
 }

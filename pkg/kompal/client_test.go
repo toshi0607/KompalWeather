@@ -1,13 +1,19 @@
 package kompal
 
-import "testing"
+import (
+	"context"
+	"os"
+	"testing"
+)
 
 func TestFetch(t *testing.T) {
-	//html, err := Fetch()
-	//if !strings.Contains(html, "金春湯") {
-	//	t.Fatal("HTML doesn't contains 金春湯")
-	//}
-	//if err != nil {
-	//	t.Fatalf("error: %s", err)
-	//}
+	url := os.Getenv("KOMPAL_URL")
+	k := New(url)
+	s, err := k.Fetch(context.Background())
+	if err != nil {
+		t.Fatalf("error: %s", err)
+	}
+	if s.Timestamp.IsZero() {
+		t.Fatal("Male is empty")
+	}
 }

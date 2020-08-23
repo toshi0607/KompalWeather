@@ -2,13 +2,16 @@ package status
 
 import "time"
 
-//男性サウナ：普通です。 女性サウナ：空いてます。
-//(8月23日 13:41現在)
+//　0 : 空いてます（0-2人）
+//　1 : 普通です（3-6人）
+//　2 : 少し混んでます（7-8人）
+//　3 : 満員です（9人）
 
 type Status struct {
-	Male      string
-	Female    string
-	Timestamp time.Time
+	MaleSauna   int `json:"male_sauna"`
+	FemaleSauna int `json:"female_sauna"`
+	Timestamp   time.Time
+	CreatedAt   time.Time
 }
 
 func ToRow(s string) (string, error) {
