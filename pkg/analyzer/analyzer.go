@@ -14,9 +14,9 @@ type analyzer struct {
 
 type (
 	Result struct {
-		maleTrend    Trend
-		femaleTrend  Trend
-		latestStatus status.Status
+		MaleTrend    Trend
+		FemaleTrend  Trend
+		LatestStatus status.Status
 	}
 
 	Trend int
@@ -34,11 +34,11 @@ func (t Trend) String() string {
 	case Unknown:
 		return "Unknown"
 	case Increasing:
-		return "Increasing"
+		return "混んできました。"
 	case Decreasing:
-		return "Decreasing"
+		return "空いてきました。"
 	case Constant:
-		return "Constant"
+		return "変わりありません。"
 	default:
 		return "Invalid"
 	}
@@ -68,22 +68,22 @@ func (a analyzer) Analyze(ctx context.Context) (*Result, error) {
 
 	var result Result
 	if ss[0].MaleSauna == ss[1].MaleSauna {
-		result.maleTrend = Constant
+		result.MaleTrend = Constant
 	} else if ss[0].MaleSauna > ss[1].MaleSauna {
-		result.maleTrend = Decreasing
+		result.MaleTrend = Decreasing
 	} else {
-		result.maleTrend = Increasing
+		result.MaleTrend = Increasing
 	}
 
 	if ss[0].FemaleSauna == ss[1].FemaleSauna {
-		result.femaleTrend = Constant
+		result.FemaleTrend = Constant
 	} else if ss[0].FemaleSauna > ss[1].FemaleSauna {
-		result.femaleTrend = Decreasing
+		result.FemaleTrend = Decreasing
 	} else {
-		result.femaleTrend = Increasing
+		result.FemaleTrend = Increasing
 	}
 
-	result.latestStatus = ss[1]
+	result.LatestStatus = ss[1]
 
 	return &result, nil
 }

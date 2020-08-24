@@ -18,6 +18,8 @@ type SlackConfig struct {
 type TwitterConfig struct {
 }
 
+//いつ通知するかはそれぞれもつべき
+
 func New() {
 
 }
