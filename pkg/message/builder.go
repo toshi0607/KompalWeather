@@ -11,6 +11,7 @@ func Build(r *analyzer.Result) string {
 	var m strings.Builder
 	m.WriteString(maleMessage(r))
 	m.WriteString(femaleMessage(r))
+	m.WriteString(fmt.Sprintf("（%s現在）\n", r.LatestStatus.Timestamp.Format("2006年01月02日 15時04分")))
 	m.WriteString(fmt.Sprint("最新状況はHPから！ https://kom-pal.com/"))
 
 	return m.String()

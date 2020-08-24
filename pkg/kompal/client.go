@@ -15,16 +15,20 @@ var _ Fetcher = (*Kompal)(nil)
 var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
 type Kompal struct {
-	url string
+	config *Config
 }
 
-func New(url string) *Kompal {
-	return &Kompal{url: url}
+type Config struct {
+	URL string
+}
+
+func New(c *Config) *Kompal {
+	return &Kompal{c}
 }
 
 func (k *Kompal) Fetch(ctx context.Context) (*status.Status, error) {
 	// TODO: use ctx,make http client replaceable
-	resp, err := http.Get(k.url)
+	resp, err := http.Get(k.config.URL)
 	if err != nil {
 		return nil, err
 	}

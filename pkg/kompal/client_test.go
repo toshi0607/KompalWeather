@@ -8,7 +8,7 @@ import (
 
 func TestFetch(t *testing.T) {
 	url := os.Getenv("KOMPAL_URL")
-	k := New(url)
+	k := New(&Config{URL: url})
 	s, err := k.Fetch(context.Background())
 	if err != nil {
 		t.Fatalf("error: %s", err)

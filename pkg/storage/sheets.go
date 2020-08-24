@@ -2,8 +2,8 @@ package storage
 
 import (
 	"context"
-	"fmt"
-	"io/ioutil"
+	"strconv"
+	"time"
 
 	"github.com/toshi0607/kompal-weather/pkg/status"
 	"gopkg.in/Iwark/spreadsheet.v2"
@@ -12,65 +12,76 @@ import (
 )
 
 var _ Storage = (*Sheets)(nil)
+var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
-//https://developers.google.com/sheets/api/quickstart/go?authuser=1
-//https://github.com/Iwark/spreadsheet
-
-const (
-	spreadSheetID = ""
-	sheetId       = 120
-)
+type SheetsConfig struct {
+	SpreadSheetID string
+	SheetId       uint
+}
 
 type Sheets struct {
 	service *spreadsheet.Service
+	config  *SheetsConfig
 }
 
-func NewSheets() (*Sheets, error) {
-	//https://github.com/golang/oauth2/blob/master/google/default.go 自分のdefaultかCloud RunのSAがいいなぁ…
-	data, err := ioutil.ReadFile("client_secret.json")
+func NewSheets(c *SheetsConfig) (*Sheets, error) {
+	ctx := context.TODO()
+	client, err := google.DefaultClient(ctx, spreadsheet.Scope)
 	if err != nil {
 		return nil, err
 	}
 
-	conf, err := google.JWTConfigFromJSON(data, spreadsheet.Scope)
-	if err != nil {
-		return nil, err
-	}
-
-	client := conf.Client(context.TODO())
 	service := spreadsheet.NewServiceWithClient(client)
 	return &Sheets{
 		service: service,
+		config:  c,
 	}, nil
 }
 
 func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
-	ss, err := s.service.FetchSpreadsheet(spreadSheetID)
+	ss, err := s.service.FetchSpreadsheet(s.config.SpreadSheetID)
+	if err != nil {
+		return nil, err
+	}
+	sheet, err := ss.SheetByID(s.config.SheetId)
 	if err != nil {
 		return nil, err
 	}
 
-	sheet, err := ss.SheetByID(sheetId)
+	currentRow := sheet.Rows[len(sheet.Rows)-1]
+	cMale, err := strconv.Atoi(currentRow[0].Value)
 	if err != nil {
 		return nil, err
 	}
-	//l := sheet.Rows
-	//l[0][0].Value
+	cFemale, err := strconv.Atoi(currentRow[1].Value)
+	if err != nil {
+		return nil, err
+	}
+	//cDt, err := time.ParseInLocation("", currentRow[2].Value, jst)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	currentRow := sheet.Rows[:len(sheet.Rows)-1][0]
-	cMale := currentRow[0]
-	cFemale := currentRow[1]
-	cDt := currentRow[2]
+	previousRow := sheet.Rows[len(sheet.Rows)-2]
 
-	previousRow := sheet.Rows[:len(sheet.Rows)-2]
-	pMale := previousRow[0]
-	pFemale := previousRow[1]
-	pDt := previousRow[2]
-	fmt.Print(cMale, cFemale, cDt, pMale, pFemale, pDt)
+	pMale, err := strconv.Atoi(previousRow[0].Value)
+	if err != nil {
+		return nil, err
+	}
+	pFemale, err := strconv.Atoi(previousRow[1].Value)
+	if err != nil {
+		return nil, err
+	}
+	//pDt := previousRow[2]
 	return []status.Status{
-		//{
-		//	Male: cMale.Value,
-		//},
+		{
+			MaleSauna:   status.Sauna(cMale),
+			FemaleSauna: status.Sauna(cFemale),
+		},
+		{
+			MaleSauna:   status.Sauna(pMale),
+			FemaleSauna: status.Sauna(pFemale),
+		},
 	}, nil
 }
 

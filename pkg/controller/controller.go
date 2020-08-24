@@ -11,15 +11,15 @@ import (
 )
 
 type controller struct {
-	kompal    kompal.Kompal
+	kompal    kompal.Fetcher
 	storage   storage.Storage
 	notifiers []notifier.Notifier
 	analyzer  analyzer.Analyzer
 }
 
-func New(k kompal.Kompal, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer) *controller {
+func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer) *controller {
 	return &controller{
-		kompal:    k,
+		kompal:    f,
 		storage:   s,
 		notifiers: ns,
 		analyzer:  a,
@@ -51,11 +51,5 @@ func (c controller) Run(ctx context.Context) error {
 		return err
 	}
 
-	// Signal handling
-
 	return nil
 }
-
-// Analyzer
-// Sheets
-// Notifier
