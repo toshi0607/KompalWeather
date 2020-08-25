@@ -78,7 +78,7 @@ func realMain(_ []string) int {
 		fmt.Print(err)
 		return exitError
 	}
-	fmt.Print("http server listening")
+	fmt.Printf("http server listening, port: %d\n", c.ServerPort)
 
 	wg, ctx := errgroup.WithContext(ctx)
 	wg.Go(func() error { return server.Serve(httpLn) })

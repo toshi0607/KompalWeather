@@ -29,6 +29,11 @@ func New(config *Config) *Slack {
 }
 
 func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
+	if result.MaleTrend == analyzer.Constant && result.FemaleTrend == analyzer.Constant {
+		fmt.Print("skip slack notification")
+		return nil
+	}
+
 	m := message.Build(result)
 	j := `{"channel":"` + s.config.ChannelNames[0] + `","username":"` + s.config.UserName + `","text":"` + m + `"}`
 	fmt.Printf("channel: %s\n", s.config.ChannelNames[0])
