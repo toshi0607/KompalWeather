@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strconv"
 	"testing"
@@ -28,5 +27,10 @@ func TestNewSheets(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error: %s", err)
 	}
-	fmt.Sprint(ss)
+	if len(ss) != 2 {
+		t.Errorf("[%s] statuses got: %d, want: 2", "TestNewSheets", len(ss))
+	}
+	if ss[0].Timestamp.IsZero() || ss[1].Timestamp.IsZero() {
+		t.Fatal("Timestamp should not be zero value")
+	}
 }

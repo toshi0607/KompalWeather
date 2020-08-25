@@ -68,7 +68,7 @@ func realMain(_ []string) int {
 	analyzer := analyzer.New(sheets)
 
 	// Server start
-	server := http.New(k, nil, []notifier.Notifier{slack}, analyzer)
+	server := http.New(k, sheets, []notifier.Notifier{slack}, analyzer)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {

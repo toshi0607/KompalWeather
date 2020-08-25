@@ -55,6 +55,7 @@ func (c *Config) Init() error {
 	}
 
 	// Secret
+	c.secret.AddGCPProjectId(e.GCPProjectID)
 	kompalUrl, err := c.secret.Get(ctx, e.KompalUrlSecretName)
 	if err != nil {
 		return err
