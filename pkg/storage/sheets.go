@@ -16,7 +16,10 @@ var _ Storage = (*Sheets)(nil)
 var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
 // https://golang.org/pkg/time/#Time.String
-var layout = "2006-01-02 15:04:05.999999999 -0700 MST"
+// 保存時に Asia/TokyoになるがParseできない
+//var layout = "2006-01-02 15:04:05.999999999 -0700 MST"
+
+var layout = time.RFC3339
 
 type SheetsConfig struct {
 	SpreadSheetID string
@@ -114,7 +117,7 @@ func (s *Sheets) Save(ctx context.Context, st *status.Status) (*status.Status, e
 	now := time.Now().In(jst)
 	sheet.Update(targetRowIndex, 0, strconv.Itoa(int(st.MaleSauna)))
 	sheet.Update(targetRowIndex, 1, strconv.Itoa(int(st.FemaleSauna)))
-	sheet.Update(targetRowIndex, 2, st.Timestamp.Format(layout))
+	sheet.Update(targetRowIndex, 2, st.Timestamp.In(jst).Format(layout))
 	sheet.Update(targetRowIndex, 3, now.Format(layout))
 	if err := sheet.Synchronize(); err != nil {
 		return nil, fmt.Errorf("failed to update the sheet: %v", err)

@@ -32,7 +32,7 @@ func (c controller) Run(ctx context.Context) error {
 		return err
 	}
 
-	if err := c.storage.Save(ctx, s); err != nil {
+	if _, err := c.storage.Save(ctx, s); err != nil {
 		return err
 	}
 

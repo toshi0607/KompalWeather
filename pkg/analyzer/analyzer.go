@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/toshi0607/kompal-weather/pkg/status"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
@@ -55,7 +56,7 @@ func New(storage storage.Storage) Analyzer {
 func (a analyzer) Analyze(ctx context.Context) (*Result, error) {
 	ss, err := a.storage.Statuses(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get statuses: %v", err)
 	}
 	if len(ss) != expectedNumberOfStatuses {
 		return nil, errors.New("no sufficient status")

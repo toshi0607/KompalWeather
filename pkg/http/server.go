@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -34,8 +35,10 @@ func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer
 
 		mux: http.NewServeMux(),
 	}
-	return server
 
+	server.registerHandlers()
+
+	return server
 }
 
 func (s *Server) Serve(ln net.Listener) error {
@@ -45,7 +48,7 @@ func (s *Server) Serve(ln net.Listener) error {
 	s.server = server
 
 	if err := server.Serve(ln); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return err
+		return fmt.Errorf("failed to serve: %v", err)
 	}
 
 	return nil

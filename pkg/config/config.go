@@ -43,6 +43,9 @@ type env struct {
 
 func New(secret *secret.Secret) *Config {
 	return &Config{
+		Slack:  &slack.Config{},
+		Kompal: &kompal.Config{},
+		Sheets: &storage.SheetsConfig{},
 		secret: secret,
 	}
 }

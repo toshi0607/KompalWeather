@@ -40,12 +40,14 @@ func realMain(_ []string) int {
 	// init secret manager client
 	s, err := secret.New()
 	if err != nil {
+		fmt.Print(err)
 		return exitError
 	}
 
 	// Init config
 	c := config.New(s)
 	if err := c.Init(); err != nil {
+		fmt.Print(err)
 		return exitError
 	}
 
@@ -55,6 +57,7 @@ func realMain(_ []string) int {
 	// Init storage
 	sheets, err := storage.NewSheets(c.Sheets)
 	if err != nil {
+		fmt.Print(err)
 		return exitError
 	}
 
@@ -72,8 +75,10 @@ func realMain(_ []string) int {
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {
+		fmt.Print(err)
 		return exitError
 	}
+	fmt.Print("http server listening")
 
 	wg, ctx := errgroup.WithContext(ctx)
 	wg.Go(func() error { return server.Serve(httpLn) })

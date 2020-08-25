@@ -32,12 +32,12 @@ func (s *Secret) Get(ctx context.Context, name string) (string, error) {
 		return "", errors.New("gcpProjectId is required")
 	}
 
-	req := &secretmanagerpb.GetSecretRequest{
-		Name: fmt.Sprintf("projects/%s/secrets/%s", s.gcpProjectId, name),
+	req := &secretmanagerpb.AccessSecretVersionRequest{
+		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", s.gcpProjectId, name),
 	}
-	resp, err := s.client.GetSecret(ctx, req)
+	resp, err := s.client.AccessSecretVersion(ctx, req)
 	if err != nil {
 		return "", err
 	}
-	return resp.GetName(), nil
+	return string(resp.Payload.Data), nil
 }
