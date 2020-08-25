@@ -20,4 +20,4 @@ RUN addgroup -g 1001 app && adduser -D -G app -u 1001 app
 
 USER 1001
 
-CMD ["/bin/http-server"]
+CMD ["/bin/kompal_weather"]
