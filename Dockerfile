@@ -14,7 +14,7 @@ FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
-COPY --from=0 /go/bin/kompal_weather /bin/kompal_weatherr
+COPY --from=0 /go/bin/kompal_weather /bin/kompal_weather
 
 RUN addgroup -g 1001 app && adduser -D -G app -u 1001 app
 
