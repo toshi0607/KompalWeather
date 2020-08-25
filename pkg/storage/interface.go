@@ -8,5 +8,5 @@ import (
 
 type Storage interface {
 	Statuses(ctx context.Context) ([]status.Status, error)
-	Save(ctx context.Context, st *status.Status) error
+	Save(ctx context.Context, st *status.Status) (*status.Status, error)
 }

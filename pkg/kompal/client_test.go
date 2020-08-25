@@ -14,6 +14,6 @@ func TestFetch(t *testing.T) {
 		t.Fatalf("error: %s", err)
 	}
 	if s.Timestamp.IsZero() {
-		t.Fatal("Timestamp is empty")
+		t.Fatal("Timestamp should not be zero value")
 	}
 }
