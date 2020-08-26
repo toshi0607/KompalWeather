@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
+	it "github.com/toshi0607/kompal-weather/internal/time"
 	"github.com/toshi0607/kompal-weather/pkg/status"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
 )
@@ -26,21 +26,19 @@ func (m *memory) Save(ctx context.Context, st *status.Status) (*status.Status, e
 }
 
 func TestAnalyzer_Analyze(t *testing.T) {
-	var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
-	var layout = time.RFC3339
-	time1, err := time.ParseInLocation(layout, "2020-08-22T00:03:30+09:00", jst)
+	time1, err := it.ToJSTTime("2020-08-22T00:03:30+09:00")
 	if err != nil {
 		t.Error(err)
 	}
-	time2, err := time.ParseInLocation(layout, "2020-08-23T00:03:30+09:00", jst)
+	time2, err := it.ToJSTTime("2020-08-23T00:03:30+09:00")
 	if err != nil {
 		t.Error(err)
 	}
-	time3, err := time.ParseInLocation(layout, "2020-08-24T00:03:30+09:00", jst)
+	time3, err := it.ToJSTTime("2020-08-24T00:03:30+09:00")
 	if err != nil {
 		t.Error(err)
 	}
-	time4, err := time.ParseInLocation(layout, "2020-08-25T00:03:30+09:00", jst)
+	time4, err := it.ToJSTTime("2020-08-24T00:03:30+09:00")
 	if err != nil {
 		t.Error(err)
 	}

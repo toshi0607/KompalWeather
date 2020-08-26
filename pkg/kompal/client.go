@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
+	t "github.com/toshi0607/kompal-weather/internal/time"
 	"github.com/toshi0607/kompal-weather/pkg/status"
 )
 
 var _ Fetcher = (*Kompal)(nil)
-var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
 type Kompal struct {
 	config *Config
@@ -49,6 +48,6 @@ func (k *Kompal) Fetch(ctx context.Context) (*status.Status, error) {
 	return &status.Status{
 		MaleSauna:   st.MaleSauna,
 		FemaleSauna: st.FemaleSauna,
-		Timestamp:   st.Timestamp.In(jst),
+		Timestamp:   t.ToJST(st.Timestamp),
 	}, nil
 }

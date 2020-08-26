@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	t "github.com/toshi0607/kompal-weather/internal/time"
 	"github.com/toshi0607/kompal-weather/pkg/status"
 	"gopkg.in/Iwark/spreadsheet.v2"
 
@@ -13,13 +14,6 @@ import (
 )
 
 var _ Storage = (*Sheets)(nil)
-var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
-
-// https://golang.org/pkg/time/#Time.String
-// 保存時に Asia/TokyoになるがParseできない
-//var layout = "2006-01-02 15:04:05.999999999 -0700 MST"
-
-var layout = time.RFC3339
 
 type SheetsConfig struct {
 	SpreadSheetID string
@@ -64,11 +58,11 @@ func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
 	if err != nil {
 		return nil, err
 	}
-	cDt, err := time.ParseInLocation(layout, currentRow[2].Value, jst)
+	cDt, err := t.ToJSTTime(currentRow[2].Value)
 	if err != nil {
 		return nil, err
 	}
-	cCa, err := time.ParseInLocation(layout, currentRow[3].Value, jst)
+	cCa, err := t.ToJSTTime(currentRow[3].Value)
 	if err != nil {
 		return nil, err
 	}
@@ -82,11 +76,11 @@ func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
 	if err != nil {
 		return nil, err
 	}
-	pDt, err := time.ParseInLocation(layout, previousRow[2].Value, jst)
+	pDt, err := t.ToJSTTime(previousRow[2].Value)
 	if err != nil {
 		return nil, err
 	}
-	pCa, err := time.ParseInLocation(layout, previousRow[3].Value, jst)
+	pCa, err := t.ToJSTTime(previousRow[3].Value)
 	if err != nil {
 		return nil, err
 	}
@@ -124,11 +118,11 @@ func (s *Sheets) Save(ctx context.Context, st *status.Status) (*status.Status, e
 	}
 
 	targetRowIndex := len(sheet.Rows)
-	now := time.Now().In(jst)
+	now := t.ToJST(time.Now())
 	sheet.Update(targetRowIndex, 0, strconv.Itoa(int(st.MaleSauna)))
 	sheet.Update(targetRowIndex, 1, strconv.Itoa(int(st.FemaleSauna)))
-	sheet.Update(targetRowIndex, 2, st.Timestamp.In(jst).Format(layout))
-	sheet.Update(targetRowIndex, 3, now.Format(layout))
+	sheet.Update(targetRowIndex, 2, t.ToJSTString(st.Timestamp))
+	sheet.Update(targetRowIndex, 3, t.ToJSTString(now))
 	if err := sheet.Synchronize(); err != nil {
 		return nil, fmt.Errorf("failed to update the sheet: %v", err)
 	}
