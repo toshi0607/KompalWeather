@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	cloud.google.com/go v0.64.0
+	github.com/google/go-cmp v0.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d

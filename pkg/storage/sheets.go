@@ -68,6 +68,10 @@ func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
 	if err != nil {
 		return nil, err
 	}
+	cCa, err := time.ParseInLocation(layout, currentRow[3].Value, jst)
+	if err != nil {
+		return nil, err
+	}
 
 	previousRow := sheet.Rows[len(sheet.Rows)-2]
 	pMale, err := strconv.Atoi(previousRow[0].Value)
@@ -82,17 +86,23 @@ func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
 	if err != nil {
 		return nil, err
 	}
+	pCa, err := time.ParseInLocation(layout, previousRow[3].Value, jst)
+	if err != nil {
+		return nil, err
+	}
 
 	return []status.Status{
 		{
 			MaleSauna:   status.Sauna(cMale),
 			FemaleSauna: status.Sauna(cFemale),
 			Timestamp:   cDt,
+			CreatedAt:   cCa,
 		},
 		{
 			MaleSauna:   status.Sauna(pMale),
 			FemaleSauna: status.Sauna(pFemale),
 			Timestamp:   pDt,
+			CreatedAt:   pCa,
 		},
 	}, nil
 }

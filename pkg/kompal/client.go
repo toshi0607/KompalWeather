@@ -48,7 +48,7 @@ func (k *Kompal) Fetch(ctx context.Context) (*status.Status, error) {
 
 	return &status.Status{
 		MaleSauna:   st.MaleSauna,
-		FemaleSauna: st.MaleSauna,
+		FemaleSauna: st.FemaleSauna,
 		Timestamp:   st.Timestamp.In(jst),
 	}, nil
 }
