@@ -58,6 +58,8 @@ func New(secret *secret.Secret) *Config {
 
 func (c *Config) Init() error {
 	ctx := context.TODO()
+
+	// Environment variable
 	var e env
 	if err := envconfig.Process("", &e); err != nil {
 		return fmt.Errorf("failed to process envconfig: %s", err)
