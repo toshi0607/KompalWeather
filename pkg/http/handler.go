@@ -41,7 +41,9 @@ func (s *Server) watchHandler() http.Handler {
 
 		eg, ctx := errgroup.WithContext(ctx)
 		for _, n := range s.notifiers {
+			n := n
 			eg.Go(func() error {
+				fmt.Printf("notify type: %s\n", n.Type())
 				return n.Notify(ctx, result)
 			})
 		}

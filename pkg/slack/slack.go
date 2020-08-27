@@ -22,15 +22,18 @@ type Config struct {
 }
 
 func New(config *Config) *Slack {
-
 	return &Slack{
 		config: config,
 	}
 }
 
+func (s Slack) Type() string {
+	return "slack"
+}
+
 func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	if result.MaleTrend == analyzer.Constant && result.FemaleTrend == analyzer.Constant {
-		fmt.Print("skip slack notification")
+		fmt.Print("skip slack notification\n")
 		return nil
 	}
 

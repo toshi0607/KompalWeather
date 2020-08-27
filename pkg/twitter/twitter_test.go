@@ -1,4 +1,4 @@
-package slack
+package twitter
 
 import (
 	"context"
@@ -10,25 +10,29 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/status"
 )
 
-func TestSlack_Type(t *testing.T) {
+func TestTwitter_Type(t *testing.T) {
 	got := New(&Config{}).Type()
-	want := "slack"
+	want := "twitter"
 	if got != want {
 		t.Errorf("got: %s, want: %s", got, want)
 	}
 }
 
-func TestSlack_Notify(t *testing.T) {
+func TestTwitter_Notify(t *testing.T) {
 	ctx := context.TODO()
-	url := os.Getenv("WEBHOOK_URL")
-	s := New(
+	apiKey := os.Getenv("TWITTER_API_KEY")
+	apiKeySecret := os.Getenv("TWITTER_API_KEY_SECRET")
+	accessToken := os.Getenv("TWITTER_ACCESS_TOKEN")
+	accessTokenSecret := os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
+	tw := New(
 		&Config{
-			WebhookUrl:   url,
-			ChannelNames: []string{"dev"},
-			UserName:     "kompal-weather",
+			APIKey:            apiKey,
+			APIKeySecret:      apiKeySecret,
+			AccessToken:       accessToken,
+			AccessTokenSecret: accessTokenSecret,
 		})
 
-	err := s.Notify(ctx, &analyzer.Result{
+	err := tw.Notify(ctx, &analyzer.Result{
 		MaleTrend:   analyzer.Unknown,
 		FemaleTrend: analyzer.Constant,
 		LatestStatus: status.Status{

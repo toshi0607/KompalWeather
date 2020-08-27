@@ -16,6 +16,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/secret"
 	"github.com/toshi0607/kompal-weather/pkg/slack"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
+	"github.com/toshi0607/kompal-weather/pkg/twitter"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -63,6 +64,7 @@ func realMain(_ []string) int {
 
 	// Init notifiers
 	// Init twitter
+	twitter := twitter.New(c.Twitter)
 
 	// Init slack
 	slack := slack.New(c.Slack)
@@ -71,7 +73,7 @@ func realMain(_ []string) int {
 	analyzer := analyzer.New(sheets)
 
 	// Server start
-	server := http.New(k, sheets, []notifier.Notifier{slack}, analyzer)
+	server := http.New(k, sheets, []notifier.Notifier{slack, twitter}, analyzer)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {
