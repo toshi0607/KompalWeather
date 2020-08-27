@@ -7,6 +7,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// This application is intended to be hosted by Cloud Run which doesn't allow unauthenticated.
+// Called from Cloud Scheduler. Service account OIDC token with roles/run.invoker is required.
 func (s *Server) watchHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
