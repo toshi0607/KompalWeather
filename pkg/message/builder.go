@@ -5,9 +5,14 @@ import (
 	"strings"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
+	"github.com/toshi0607/kompal-weather/pkg/status"
 )
 
 func Build(r *analyzer.Result) string {
+	if r.LatestStatus.FemaleSauna == status.Off {
+		return "本日の営業は終了しました。また来てね！"
+	}
+
 	var m strings.Builder
 	m.WriteString(maleMessage(r))
 	m.WriteString(femaleMessage(r))

@@ -34,6 +34,17 @@ func TestBuild(t *testing.T) {
 			},
 			want: "男湯サウナは現在確認中です。\n女湯サウナは変わりありません。現在満員です。\n（0001年01月01日 00時00分現在）\n最新状況はHPから！ https://kom-pal.com/",
 		},
+		"off": {
+			result: &analyzer.Result{
+				MaleTrend:   analyzer.Decreasing,
+				FemaleTrend: analyzer.Constant,
+				LatestStatus: status.Status{
+					MaleSauna:   status.Off,
+					FemaleSauna: status.Off,
+				},
+			},
+			want: "本日の営業は終了しました。また来てね！",
+		},
 	}
 
 	for name, te := range tests {
