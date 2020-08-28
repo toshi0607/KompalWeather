@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ChimeraCoder/anaconda"
+	"github.com/toshi0607/kompal-weather/pkg/log"
 	"github.com/toshi0607/kompal-weather/pkg/message"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
@@ -12,6 +13,7 @@ import (
 
 type Twitter struct {
 	client *anaconda.TwitterApi
+	log    *log.Log
 }
 
 type Config struct {
@@ -21,7 +23,7 @@ type Config struct {
 	AccessTokenSecret string
 }
 
-func New(config *Config) *Twitter {
+func New(config *Config, log *log.Log) *Twitter {
 	return &Twitter{
 		client: anaconda.NewTwitterApiWithCredentials(
 			config.AccessToken,
@@ -29,6 +31,7 @@ func New(config *Config) *Twitter {
 			config.APIKey,
 			config.APIKeySecret,
 		),
+		log: log,
 	}
 }
 
@@ -38,7 +41,7 @@ func (t Twitter) Type() string {
 
 func (t Twitter) Notify(ctx context.Context, result *analyzer.Result) error {
 	if result.MaleTrend == analyzer.Constant && result.FemaleTrend == analyzer.Constant {
-		fmt.Print("skip twitter notification\n")
+		t.log.Info("skip twitter notification")
 		return nil
 	}
 

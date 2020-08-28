@@ -7,11 +7,13 @@ import (
 	"net/http"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
+	"github.com/toshi0607/kompal-weather/pkg/log"
 	"github.com/toshi0607/kompal-weather/pkg/message"
 )
 
 type Slack struct {
 	config *Config
+	log    *log.Log
 }
 
 type Config struct {
@@ -21,9 +23,10 @@ type Config struct {
 	//Frequency    config.Frequency
 }
 
-func New(config *Config) *Slack {
+func New(config *Config, log *log.Log) *Slack {
 	return &Slack{
 		config: config,
+		log:    log,
 	}
 }
 
@@ -33,15 +36,13 @@ func (s Slack) Type() string {
 
 func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	if result.MaleTrend == analyzer.Constant && result.FemaleTrend == analyzer.Constant {
-		fmt.Print("skip slack notification\n")
+		s.log.Info("skip slack notification")
 		return nil
 	}
 
 	m := message.Build(result)
 	j := `{"channel":"` + s.config.ChannelNames[0] + `","username":"` + s.config.UserName + `","text":"` + m + `"}`
-	fmt.Printf("channel: %s\n", s.config.ChannelNames[0])
-	fmt.Printf("username: %s\n", s.config.UserName)
-	fmt.Printf("message: %s\n", m)
+	s.log.Info(j)
 	req, err := http.NewRequest(
 		http.MethodPost,
 		s.config.WebhookUrl,

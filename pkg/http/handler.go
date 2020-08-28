@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"golang.org/x/sync/errgroup"
@@ -21,7 +20,7 @@ func (s *Server) watchHandler() http.Handler {
 
 		ctx := r.Context()
 		s.log.SetHandlerName(handlerName)
-		s.log.Info(fmt.Sprintf("%s started", handlerName))
+		s.log.Info("%s started", handlerName)
 
 		f, err := s.kompal.Fetch(ctx)
 		if err != nil {
@@ -29,7 +28,7 @@ func (s *Server) watchHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		s.log.Info(fmt.Sprintf("fetched: %v", f))
+		s.log.Info("fetched: %v", f)
 
 		st, err := s.storage.Save(ctx, f)
 		if err != nil {
@@ -37,7 +36,7 @@ func (s *Server) watchHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		s.log.Info(fmt.Sprintf("saved: %v", st))
+		s.log.Info("saved: %v", st)
 
 		result, err := s.analyzer.Analyze(ctx)
 		if err != nil {
@@ -45,13 +44,13 @@ func (s *Server) watchHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		s.log.Info(fmt.Sprintf("result: %v", result))
+		s.log.Info("result: %v", result)
 
 		eg, ctx := errgroup.WithContext(ctx)
 		for _, n := range s.notifiers {
 			n := n
 			eg.Go(func() error {
-				s.log.Info(fmt.Sprintf("notification type: %v", n.Type()))
+				s.log.Info("notification type: %v", n.Type())
 				return n.Notify(ctx, result)
 			})
 		}

@@ -42,11 +42,11 @@ func (l *Log) SetHandlerName(name string) {
 }
 
 // Need roles/logging.logWriter	to write in Cloud Logging
-func (l *Log) Info(msg string) {
+func (l *Log) Info(format string, v ...interface{}) {
 	l.client.Logger(l.serviceName).Log(logging.Entry{
 		Severity: logging.Info,
 		Payload: Message{
-			Msg:         msg,
+			Msg:         fmt.Sprintf(format, v),
 			Version:     l.version,
 			HandlerName: l.handlerName,
 		},

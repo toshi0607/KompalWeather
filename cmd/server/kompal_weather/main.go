@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/toshi0607/kompal-weather/internal/config"
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
-	"github.com/toshi0607/kompal-weather/pkg/config"
 	"github.com/toshi0607/kompal-weather/pkg/http"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
 	"github.com/toshi0607/kompal-weather/pkg/log"
@@ -73,10 +73,10 @@ func realMain(_ []string) int {
 
 	// Init notifiers
 	// Init twitter
-	twitter := twitter.New(c.Twitter)
+	twitter := twitter.New(c.Twitter, l)
 
 	// Init slack
-	slack := slack.New(c.Slack)
+	slack := slack.New(c.Slack, l)
 
 	// Init analyzer
 	analyzer := analyzer.New(sheets)
@@ -89,7 +89,7 @@ func realMain(_ []string) int {
 		l.Error("failed to listen port", err)
 		return exitError
 	}
-	l.Info(fmt.Sprintf("http server listening, port: %d", c.ServerPort))
+	l.Info("http server listening, port: %d", c.ServerPort)
 
 	wg, ctx := errgroup.WithContext(ctx)
 	wg.Go(func() error { return server.Serve(httpLn) })
