@@ -28,6 +28,8 @@ type Config struct {
 	Sheets       *storage.SheetsConfig
 	ServerPort   int
 	GCPProjectID string
+	Version      string
+	ServiceName  string
 
 	secret *secret.Secret
 }
@@ -45,6 +47,8 @@ type env struct {
 	KompalUrlSecretName                string   `envconfig:"KOMPAL_URL_SECRET_NAME" required:"true"`
 	SpreadSheetID                      string   `envconfig:"SPREAD_SHEET_ID" required:"true"`
 	SheetID                            uint     `envconfig:"SHEET_ID" required:"true"`
+	ServiceName                        string   `envconfig:"SERVICE_NAME" required:"true"`
+	Version                            string   `envconfig:"VERSION" required:"true"`
 }
 
 func New(secret *secret.Secret) *Config {
@@ -106,6 +110,8 @@ func (c *Config) Init() error {
 	}
 	c.GCPProjectID = e.GCPProjectID
 	c.ServerPort = e.ServerPort
+	c.ServiceName = e.ServiceName
+	c.Version = e.Version
 	c.Sheets = &storage.SheetsConfig{
 		SpreadSheetID: e.SpreadSheetID,
 		SheetId:       e.SheetID,

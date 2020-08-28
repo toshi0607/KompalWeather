@@ -12,6 +12,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/config"
 	"github.com/toshi0607/kompal-weather/pkg/http"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
+	"github.com/toshi0607/kompal-weather/pkg/log"
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/secret"
 	"github.com/toshi0607/kompal-weather/pkg/slack"
@@ -52,13 +53,21 @@ func realMain(_ []string) int {
 		return exitError
 	}
 
+	// Init logger
+	l, err := log.New(ctx, c.GCPProjectID, c.ServiceName, c.Version)
+	if err != nil {
+		fmt.Print(err)
+		return exitError
+	}
+	defer l.Close()
+
 	// Init kompal
 	k := kompal.New(c.Kompal)
 
 	// Init storage
 	sheets, err := storage.NewSheets(c.Sheets)
 	if err != nil {
-		fmt.Print(err)
+		l.Error("failed to init sheets", err)
 		return exitError
 	}
 
@@ -73,14 +82,14 @@ func realMain(_ []string) int {
 	analyzer := analyzer.New(sheets)
 
 	// Server start
-	server := http.New(k, sheets, []notifier.Notifier{slack, twitter}, analyzer)
+	server := http.New(k, sheets, []notifier.Notifier{slack, twitter}, analyzer, l)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {
-		fmt.Print(err)
+		l.Error("failed to listen port", err)
 		return exitError
 	}
-	fmt.Printf("http server listening, port: %d\n", c.ServerPort)
+	l.Info(fmt.Sprintf("http server listening, port: %d", c.ServerPort))
 
 	wg, ctx := errgroup.WithContext(ctx)
 	wg.Go(func() error { return server.Serve(httpLn) })
@@ -90,18 +99,20 @@ func realMain(_ []string) int {
 	signal.Notify(sigCh, syscall.SIGTERM, os.Interrupt)
 	select {
 	case <-sigCh:
-		fmt.Print("received SIGTERM, exiting server gracefully")
+		l.Info("received SIGTERM, exiting server gracefully")
 	case <-ctx.Done():
+		l.Info("contest done")
 	}
 
 	// Graceful shutdown
 	if err := server.GracefulStop(ctx); err != nil {
-		fmt.Sprint()
+		l.Info("succeeded to stop server gracefully")
 	} else {
-		fmt.Sprint()
+		l.Info("failed to stop server gracefully")
 	}
 
 	if err := wg.Wait(); err != nil {
+		l.Error("server failed", err)
 		return exitError
 	}
 
