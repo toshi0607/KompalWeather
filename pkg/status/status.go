@@ -12,18 +12,17 @@ type Status struct {
 type Sauna int
 
 const (
-	Few     = 0
-	Normal  = 1
-	Crowded = 2
-	Full    = 3
+	Off     = 0
+	Few     = 1
+	Normal  = 2
+	Crowded = 3
+	Full    = 4
 )
 
-//　0 : 空いてます（0-2人）
-//　1 : 普通です（3-6人）
-//　2 : 少し混んでます（7-8人）
-//　3 : 満員です（9人）
 func (s Sauna) String() string {
 	switch s {
+	case Off:
+		return "営業時間外です。"
 	case Few:
 		return "空いてます。"
 	case Normal:
@@ -35,8 +34,4 @@ func (s Sauna) String() string {
 	default:
 		return "Invalid"
 	}
-}
-
-func ToRow(s string) (string, error) {
-	return "", nil
 }

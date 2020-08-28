@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	t "github.com/toshi0607/kompal-weather/internal/time"
 	"github.com/toshi0607/kompal-weather/pkg/status"
@@ -19,6 +20,52 @@ type Kompal struct {
 
 type Config struct {
 	URL string
+}
+
+type KompalResponse struct {
+	MaleSauna   Sauna `json:"male_sauna"`
+	FemaleSauna Sauna `json:"female_sauna"`
+	Open        bool
+	Timestamp   time.Time
+}
+
+func (kr *KompalResponse) ToStatus() *status.Status {
+	return &status.Status{
+		MaleSauna:   kr.MaleSauna.ToStatusSauna(kr.Open),
+		FemaleSauna: kr.FemaleSauna.ToStatusSauna(kr.Open),
+		Timestamp:   t.ToJST(kr.Timestamp),
+	}
+}
+
+type Sauna int
+
+//　0 : 空いてます（0-2人）
+//　1 : 普通です（3-6人）
+//　2 : 少し混んでます（7-8人）
+//　3 : 満員です（9人）
+const (
+	Few     = 0
+	Normal  = 1
+	Crowded = 2
+	Full    = 3
+)
+
+func (s Sauna) ToStatusSauna(open bool) status.Sauna {
+	if !open {
+		return status.Off
+	}
+	switch s {
+	case Few:
+		return status.Few
+	case Normal:
+		return status.Normal
+	case Crowded:
+		return status.Crowded
+	case Full:
+		return status.Full
+	default:
+		return status.Off
+	}
 }
 
 func New(c *Config) *Kompal {
@@ -40,14 +87,10 @@ func (k *Kompal) Fetch(ctx context.Context) (*status.Status, error) {
 		return nil, err
 	}
 
-	var st status.Status
-	if err := json.Unmarshal(body, &st); err != nil {
+	var kr KompalResponse
+	if err := json.Unmarshal(body, &kr); err != nil {
 		return nil, err
 	}
 
-	return &status.Status{
-		MaleSauna:   st.MaleSauna,
-		FemaleSauna: st.FemaleSauna,
-		Timestamp:   t.ToJST(st.Timestamp),
-	}, nil
+	return kr.ToStatus(), nil
 }
