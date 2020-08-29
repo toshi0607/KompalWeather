@@ -17,7 +17,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
 	golang.org/x/sys v0.0.0-20200828081204-131dc92a58d5 // indirect
-	golang.org/x/tools v0.0.0-20200828013309-97019fc2e64b // indirect
+	golang.org/x/tools v0.0.0-20200828013309-97019fc2e64b
 	google.golang.org/genproto v0.0.0-20200828030656-73b5761be4c5
 	google.golang.org/grpc v1.31.1 // indirect
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20191122095212-08231195c43b

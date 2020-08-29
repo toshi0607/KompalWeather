@@ -55,16 +55,22 @@ func realMain(_ []string) int {
 	}
 
 	// Init logger
-	l, err := logger.New(ctx, c.GCPProjectID, c.ServiceName, c.Version, c.Environment)
-	if err != nil {
-		fmt.Print(err)
-		return exitError
-	}
-	defer func() {
-		if err := l.Close(); err != nil {
-			log.Printf("failed to close: %s", err)
+	var l logger.Logger
+	if c.IsLocal() {
+		l = logger.NewLog()
+	} else {
+		var err error
+		l, err = logger.NewCloudLogging(ctx, c.GCPProjectID, c.ServiceName, c.Version, c.Environment)
+		if err != nil {
+			fmt.Print(err)
+			return exitError
 		}
-	}()
+		defer func() {
+			if err := l.Close(); err != nil {
+				log.Printf("failed to close: %s", err)
+			}
+		}()
+	}
 
 	// Init kompal
 	k := kompal.New(c.Kompal)
@@ -78,16 +84,16 @@ func realMain(_ []string) int {
 
 	// Init notifiers
 	// Init twitter
-	twitter := twitter.New(c.Twitter, l)
+	tw := twitter.New(c.Twitter, l)
 
 	// Init slack
-	slack := slack.New(c.Slack, l)
+	sl := slack.New(c.Slack, l)
 
 	// Init analyzer
-	analyzer := analyzer.New(sheets)
+	an := analyzer.New(sheets)
 
 	// Server start
-	server := http.New(k, sheets, []notifier.Notifier{slack, twitter}, analyzer, l)
+	server := http.New(k, sheets, []notifier.Notifier{sl, tw}, an, l)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {

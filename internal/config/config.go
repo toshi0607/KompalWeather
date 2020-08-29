@@ -53,6 +53,19 @@ type env struct {
 	Environment                        string   `envconfig:"ENVIRONMENT" required:"true"`
 }
 
+const (
+	envLocal       = "local"
+	envDevelopment = "development"
+	envProduction  = "production"
+)
+
+func (e *env) validate() error {
+	if e.Environment != envDevelopment && e.Environment != envProduction && e.Environment != envLocal {
+		return fmt.Errorf("env is invalid, env:%s", e.Environment)
+	}
+	return nil
+}
+
 func New(secret *secret.Secret) *Config {
 	return &Config{
 		Slack:  &slack.Config{},
@@ -69,6 +82,9 @@ func (c *Config) Init() error {
 	var e env
 	if err := envconfig.Process("", &e); err != nil {
 		return fmt.Errorf("failed to process envconfig: %s", err)
+	}
+	if err := e.validate(); err != nil {
+		return fmt.Errorf("failed to validate env: %s", err)
 	}
 
 	// Secret
@@ -121,4 +137,8 @@ func (c *Config) Init() error {
 	}
 
 	return nil
+}
+
+func (c *Config) IsLocal() bool {
+	return c.Environment == envLocal
 }

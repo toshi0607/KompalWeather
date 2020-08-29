@@ -19,13 +19,13 @@ type Server struct {
 	storage   storage.Storage
 	notifiers []notifier.Notifier
 	analyzer  analyzer.Analyzer
-	log       *logger.Log
+	log       logger.Logger
 
 	mux    *http.ServeMux
 	server *http.Server
 }
 
-func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer, l *logger.Log) *Server {
+func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer, l logger.Logger) *Server {
 	server := &Server{
 		kompal:    f,
 		storage:   s,

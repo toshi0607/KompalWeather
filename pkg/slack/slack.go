@@ -13,7 +13,7 @@ import (
 
 type Slack struct {
 	config *Config
-	log    *logger.Log
+	log    logger.Logger
 }
 
 type Config struct {
@@ -23,7 +23,7 @@ type Config struct {
 	//Frequency    config.Frequency
 }
 
-func New(config *Config, log *logger.Log) *Slack {
+func New(config *Config, log logger.Logger) *Slack {
 	return &Slack{
 		config: config,
 		log:    log,

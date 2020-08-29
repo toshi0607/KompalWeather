@@ -7,11 +7,12 @@ import (
 	"time"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
+	"github.com/toshi0607/kompal-weather/pkg/logger"
 	"github.com/toshi0607/kompal-weather/pkg/status"
 )
 
 func TestSlack_Type(t *testing.T) {
-	got := New(&Config{}).Type()
+	got := New(&Config{}, logger.NewLog()).Type()
 	want := "slack"
 	if got != want {
 		t.Errorf("got: %s, want: %s", got, want)
@@ -26,7 +27,9 @@ func TestSlack_Notify(t *testing.T) {
 			WebhookUrl:   url,
 			ChannelNames: []string{"dev"},
 			UserName:     "kompal-weather",
-		})
+		},
+		logger.NewLog(),
+	)
 
 	err := s.Notify(ctx, &analyzer.Result{
 		MaleTrend:   analyzer.Unknown,

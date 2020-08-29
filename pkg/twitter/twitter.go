@@ -13,7 +13,7 @@ import (
 
 type Twitter struct {
 	client *anaconda.TwitterApi
-	log    *logger.Log
+	log    logger.Logger
 }
 
 type Config struct {
@@ -23,7 +23,7 @@ type Config struct {
 	AccessTokenSecret string
 }
 
-func New(config *Config, log *logger.Log) *Twitter {
+func New(config *Config, log logger.Logger) *Twitter {
 	return &Twitter{
 		client: anaconda.NewTwitterApiWithCredentials(
 			config.AccessToken,
