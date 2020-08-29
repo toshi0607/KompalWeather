@@ -13,13 +13,3 @@ variable "gcp_zone" {
   type        = string
   description = "GCP zone"
 }
-
-variable "tfstate_bucket" {
-  type = string
-  description = "GCS bucket name to store tfstate"
-}
-
-variable "scheduler_target" {
-  type = string
-  description = "Audience endpoint of scheduler"
-}

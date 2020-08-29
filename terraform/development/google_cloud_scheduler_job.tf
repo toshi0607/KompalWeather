@@ -6,12 +6,11 @@ resource "google_cloud_scheduler_job" "dev1" {
     http_method = "POST"
 
     oidc_token {
-      audience              = var.scheduler_target
+      audience              = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/watch"
       service_account_email = google_service_account.kompal_weather_invoker.email
     }
 
-    // It's better to refer to cloud run resource output
-    uri = var.scheduler_target
+    uri = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/watch"
   }
 
   name      = "kompal-weather-dev"
@@ -19,6 +18,8 @@ resource "google_cloud_scheduler_job" "dev1" {
   region    = var.gcp_region
   schedule  = " */15 0,15-23 * * mon,wed-sat"
   time_zone = "Asia/Tokyo"
+
+  depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]
 }
 
 resource "google_cloud_scheduler_job" "dev2" {
@@ -28,11 +29,11 @@ resource "google_cloud_scheduler_job" "dev2" {
     http_method = "POST"
 
     oidc_token {
-      audience              = var.scheduler_target
+      audience              = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/watch"
       service_account_email = google_service_account.kompal_weather_invoker.email
     }
 
-    uri = var.scheduler_target
+    uri = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/watch"
   }
 
   name      = "kompal-weather-dev2"
@@ -40,4 +41,6 @@ resource "google_cloud_scheduler_job" "dev2" {
   region    = var.gcp_region
   schedule  = "*/15 0,10-23 * * sun"
   time_zone = "Asia/Tokyo"
+
+  depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]
 }
