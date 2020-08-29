@@ -13,6 +13,7 @@ type Log struct {
 	serviceName string
 	handlerName string
 	version     string
+	environment string
 }
 
 type Message struct {
@@ -22,7 +23,7 @@ type Message struct {
 	Version     string `json:"version"`
 }
 
-func New(ctx context.Context, gcpProjectId, serviceName, version string) (*Log, error) {
+func New(ctx context.Context, gcpProjectId, serviceName, version, environment string) (*Log, error) {
 	client, err := logging.NewClient(ctx, gcpProjectId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to new logger: %v", err)
@@ -31,6 +32,7 @@ func New(ctx context.Context, gcpProjectId, serviceName, version string) (*Log, 
 		client:      client,
 		serviceName: serviceName,
 		version:     version,
+		environment: environment,
 	}, nil
 }
 
@@ -44,7 +46,9 @@ func (l *Log) SetHandlerName(name string) {
 
 // Need roles/logging.logWriter	to write in Cloud Logging
 func (l *Log) Info(format string, args ...interface{}) {
-	log.Printf(format, args...)
+	if l.environment == "local" {
+		log.Printf(format, args...)
+	}
 	l.client.Logger(l.serviceName).Log(logging.Entry{
 		Severity: logging.Info,
 		Payload: Message{
@@ -56,7 +60,9 @@ func (l *Log) Info(format string, args ...interface{}) {
 }
 
 func (l *Log) Error(msg string, err error) {
-	log.Printf("%s%s", msg, err)
+	if l.environment == "local" {
+		log.Printf("%s%s", msg, err)
+	}
 	l.client.Logger(l.serviceName).Log(logging.Entry{
 		Severity: logging.Info,
 		Payload: Message{

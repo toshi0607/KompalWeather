@@ -30,6 +30,7 @@ type Config struct {
 	GCPProjectID string
 	Version      string
 	ServiceName  string
+	Environment  string
 
 	secret *secret.Secret
 }
@@ -49,6 +50,7 @@ type env struct {
 	SheetID                            uint     `envconfig:"SHEET_ID" required:"true"`
 	ServiceName                        string   `envconfig:"SERVICE_NAME" required:"true"`
 	Version                            string   `envconfig:"VERSION" required:"true"`
+	Environment                        string   `envconfig:"ENVIRONMENT" required:"true"`
 }
 
 func New(secret *secret.Secret) *Config {
@@ -112,6 +114,7 @@ func (c *Config) Init() error {
 	c.ServerPort = e.ServerPort
 	c.ServiceName = e.ServiceName
 	c.Version = e.Version
+	c.Environment = e.Environment
 	c.Sheets = &storage.SheetsConfig{
 		SpreadSheetID: e.SpreadSheetID,
 		SheetId:       e.SheetID,

@@ -55,7 +55,7 @@ func realMain(_ []string) int {
 	}
 
 	// Init logger
-	l, err := logger.New(ctx, c.GCPProjectID, c.ServiceName, c.Version)
+	l, err := logger.New(ctx, c.GCPProjectID, c.ServiceName, c.Version, c.Environment)
 	if err != nil {
 		fmt.Print(err)
 		return exitError
