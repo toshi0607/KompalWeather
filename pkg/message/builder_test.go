@@ -21,7 +21,7 @@ func TestBuild(t *testing.T) {
 					FemaleSauna: status.Few,
 				},
 			},
-			want: "男湯サウナは混んできました。現在少し混んでます\n女湯サウナは空いてきました。現在空いてます。\n（0001年01月01日 00時00分現在）\n最新状況はHPから！ https://kom-pal.com/",
+			want: "男湯サウナは混んできました。現在少し混んでます。\n女湯サウナは空いてきました。現在空いてます。\n（0001年01月01日 00時00分現在）\n最新状況はHPから！ https://kom-pal.com/",
 		},
 		"male unknown, female + constant": {
 			result: &analyzer.Result{

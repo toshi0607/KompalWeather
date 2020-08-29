@@ -43,7 +43,8 @@ func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	m := message.Build(result)
 	j := `{"channel":"` + s.config.ChannelNames[0] + `","username":"` + s.config.UserName + `","text":"` + m + `"}`
 	s.log.Info(j)
-	req, err := http.NewRequest(
+	req, err := http.NewRequestWithContext(
+		ctx,
 		http.MethodPost,
 		s.config.WebhookUrl,
 		bytes.NewBuffer([]byte(j)),

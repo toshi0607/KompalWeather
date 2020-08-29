@@ -28,10 +28,10 @@ func (s Sauna) String() string {
 	case Normal:
 		return "普通です。"
 	case Crowded:
-		return "少し混んでます"
+		return "少し混んでます。"
 	case Full:
 		return "満員です。"
 	default:
-		return "Invalid"
+		return "確認中です。"
 	}
 }
