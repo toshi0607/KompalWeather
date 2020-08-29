@@ -1,0 +1,38 @@
+digraph {
+        compound = "true"
+        newrank = "true"
+        subgraph "root" {
+                "[root] google_cloud_run_service.kompal-weather-dev" [label = "google_cloud_run_service.kompal-weather-dev", shape = "box"]
+                "[root] google_cloud_scheduler_job.dev1" [label = "google_cloud_scheduler_job.dev1", shape = "box"]
+                "[root] google_cloud_scheduler_job.dev2" [label = "google_cloud_scheduler_job.dev2", shape = "box"]
+                "[root] google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker" [label = "google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker", shape = "box"]
+                "[root] google_project_iam_member.kompal_weather_is_logging_logwriter" [label = "google_project_iam_member.kompal_weather_is_logging_logwriter", shape = "box"]
+                "[root] google_project_iam_member.kompal_weather_is_secretmanager_admin" [label = "google_project_iam_member.kompal_weather_is_secretmanager_admin", shape = "box"]
+                "[root] google_secret_manager_secret.kompal_url" [label = "google_secret_manager_secret.kompal_url", shape = "box"]
+                "[root] google_secret_manager_secret.twitter_access_token" [label = "google_secret_manager_secret.twitter_access_token", shape = "box"]
+                "[root] google_secret_manager_secret.twitter_access_token_secret" [label = "google_secret_manager_secret.twitter_access_token_secret", shape = "box"]
+                "[root] google_secret_manager_secret.twitter_api_key" [label = "google_secret_manager_secret.twitter_api_key", shape = "box"]
+                "[root] google_secret_manager_secret.twitter_api_key_secret" [label = "google_secret_manager_secret.twitter_api_key_secret", shape = "box"]
+                "[root] google_secret_manager_secret.web_hook_url" [label = "google_secret_manager_secret.web_hook_url", shape = "box"]
+                "[root] google_service_account.kompal_weather" [label = "google_service_account.kompal_weather", shape = "box"]
+                "[root] google_service_account.kompal_weather_invoker" [label = "google_service_account.kompal_weather_invoker", shape = "box"]
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_project_iam_member.kompal_weather_is_logging_logwriter"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_project_iam_member.kompal_weather_is_secretmanager_admin"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_secret_manager_secret.kompal_url"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_secret_manager_secret.twitter_access_token"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_secret_manager_secret.twitter_access_token_secret"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_secret_manager_secret.twitter_api_key"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_secret_manager_secret.twitter_api_key_secret"
+                "[root] google_cloud_run_service.kompal-weather-dev" -> "[root] google_secret_manager_secret.web_hook_url"
+                "[root] google_cloud_scheduler_job.dev1" -> "[root] google_cloud_run_service.kompal-weather-dev"
+                "[root] google_cloud_scheduler_job.dev1" -> "[root] google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker"
+                "[root] google_cloud_scheduler_job.dev2" -> "[root] google_cloud_run_service.kompal-weather-dev"
+                "[root] google_cloud_scheduler_job.dev2" -> "[root] google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker"
+                "[root] google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker" -> "[root] google_service_account.kompal_weather_invoker"
+                "[root] google_project_iam_member.kompal_weather_is_logging_logwriter" -> "[root] google_service_account.kompal_weather"
+                "[root] google_project_iam_member.kompal_weather_is_secretmanager_admin" -> "[root] google_service_account.kompal_weather"
+                "[root] meta.count-boundary (EachMode fixup)" -> "[root] google_cloud_scheduler_job.dev1"
+                "[root] meta.count-boundary (EachMode fixup)" -> "[root] google_cloud_scheduler_job.dev2"
+                "[root] root" -> "[root] meta.count-boundary (EachMode fixup)"
+        }
+}
