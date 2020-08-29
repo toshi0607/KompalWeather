@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
-	"github.com/toshi0607/kompal-weather/pkg/status"
 )
 
 func Build(r *analyzer.Result) string {
-	if r.LatestStatus.FemaleSauna == status.Off {
+	if r.MaleTrend == analyzer.Close {
 		return "本日の営業は終了しました。また来てね！"
+	} else if r.MaleTrend == analyzer.Open {
+		return "本日の営業を開始しました！来てね！"
 	}
 
 	var m strings.Builder

@@ -34,16 +34,27 @@ func TestBuild(t *testing.T) {
 			},
 			want: "男湯サウナは現在確認中です。\n女湯サウナは変わりありません。現在満員です。\n（0001年01月01日 00時00分現在）\n最新状況はHPから！ https://kom-pal.com/",
 		},
-		"off": {
+		"Close": {
 			result: &analyzer.Result{
-				MaleTrend:   analyzer.Decreasing,
-				FemaleTrend: analyzer.Constant,
+				MaleTrend:   analyzer.Close,
+				FemaleTrend: analyzer.Close,
 				LatestStatus: status.Status{
 					MaleSauna:   status.Off,
 					FemaleSauna: status.Off,
 				},
 			},
 			want: "本日の営業は終了しました。また来てね！",
+		},
+		"Open": {
+			result: &analyzer.Result{
+				MaleTrend:   analyzer.Open,
+				FemaleTrend: analyzer.Open,
+				LatestStatus: status.Status{
+					MaleSauna:   status.Few,
+					FemaleSauna: status.Few,
+				},
+			},
+			want: "本日の営業を開始しました！来てね！",
 		},
 	}
 

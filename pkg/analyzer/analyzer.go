@@ -28,6 +28,8 @@ const (
 	Increasing = 1
 	Decreasing = 2
 	Constant   = 3
+	Open       = 4
+	Close      = 5
 )
 
 func (t Trend) String() string {
@@ -40,6 +42,10 @@ func (t Trend) String() string {
 		return "空いてきました。"
 	case Constant:
 		return "変わりありません。"
+	case Open:
+		return "営業を開始しました。"
+	case Close:
+		return "営業を終了しました。"
 	default:
 		return "Invalid"
 	}
@@ -68,7 +74,13 @@ func (a analyzer) Analyze(ctx context.Context) (*Result, error) {
 	}
 
 	var result Result
-	if ss[0].MaleSauna == ss[1].MaleSauna {
+	result.LatestStatus = ss[1]
+
+	if ss[0].MaleSauna != status.Off && ss[1].MaleSauna == status.Off {
+		result.MaleTrend = Close
+	} else if ss[0].MaleSauna == status.Off && ss[1].MaleSauna != status.Off {
+		result.MaleTrend = Open
+	} else if ss[0].MaleSauna == ss[1].MaleSauna {
 		result.MaleTrend = Constant
 	} else if ss[0].MaleSauna > ss[1].MaleSauna {
 		result.MaleTrend = Decreasing
@@ -76,15 +88,17 @@ func (a analyzer) Analyze(ctx context.Context) (*Result, error) {
 		result.MaleTrend = Increasing
 	}
 
-	if ss[0].FemaleSauna == ss[1].FemaleSauna {
+	if ss[0].FemaleSauna != status.Off && ss[1].FemaleSauna == status.Off {
+		result.FemaleTrend = Close
+	} else if ss[0].FemaleSauna == status.Off && ss[1].FemaleSauna != status.Off {
+		result.FemaleTrend = Open
+	} else if ss[0].FemaleSauna == ss[1].FemaleSauna {
 		result.FemaleTrend = Constant
 	} else if ss[0].FemaleSauna > ss[1].FemaleSauna {
 		result.FemaleTrend = Decreasing
 	} else {
 		result.FemaleTrend = Increasing
 	}
-
-	result.LatestStatus = ss[1]
 
 	return &result, nil
 }

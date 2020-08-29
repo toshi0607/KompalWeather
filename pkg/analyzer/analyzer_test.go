@@ -47,7 +47,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		statuses []status.Status
 		want     *Result
 	}{
-		"Male Increasing, Female Constant": {
+		"Male Increasing, Female Constant, right order": {
 			statuses: []status.Status{
 				{
 					MaleSauna:   status.Few,
@@ -73,7 +73,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
-		"Male Constant, Female Decreasing": {
+		"Male Constant, Female Decreasing, reverse order": {
 			statuses: []status.Status{
 				{
 					MaleSauna:   status.Few,
@@ -94,6 +94,58 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				LatestStatus: status.Status{
 					MaleSauna:   status.Few,
 					FemaleSauna: status.Normal,
+					Timestamp:   time3,
+					CreatedAt:   time4,
+				},
+			},
+		},
+		"Open": {
+			statuses: []status.Status{
+				{
+					MaleSauna:   status.Off,
+					FemaleSauna: status.Off,
+					Timestamp:   time1,
+					CreatedAt:   time2,
+				},
+				{
+					MaleSauna:   status.Few,
+					FemaleSauna: status.Few,
+					Timestamp:   time3,
+					CreatedAt:   time4,
+				},
+			},
+			want: &Result{
+				MaleTrend:   Open,
+				FemaleTrend: Open,
+				LatestStatus: status.Status{
+					MaleSauna:   status.Few,
+					FemaleSauna: status.Few,
+					Timestamp:   time3,
+					CreatedAt:   time4,
+				},
+			},
+		},
+		"Close": {
+			statuses: []status.Status{
+				{
+					MaleSauna:   status.Normal,
+					FemaleSauna: status.Few,
+					Timestamp:   time1,
+					CreatedAt:   time2,
+				},
+				{
+					MaleSauna:   status.Off,
+					FemaleSauna: status.Off,
+					Timestamp:   time3,
+					CreatedAt:   time4,
+				},
+			},
+			want: &Result{
+				MaleTrend:   Close,
+				FemaleTrend: Close,
+				LatestStatus: status.Status{
+					MaleSauna:   status.Off,
+					FemaleSauna: status.Off,
 					Timestamp:   time3,
 					CreatedAt:   time4,
 				},
