@@ -4,7 +4,7 @@
 
 KompalWeather reports on how crowded kompal-yu is on Twitter ([@KompalWeather](https://twitter.com/KompalWeather)) and Slack. 
 
-[Kompal-yu （金春湯）](https://kom-pal.com/) is one of the best saunas and public bathes in Osaki. They are disclosing how crowded it is on their site. Furthermore, they provide API. KompalWeather utilizes this API.
+[Kompal-yu （金春湯）](https://kom-pal.com/) is one of the best saunas and public baths in Osaki. They are disclosing how crowded it is on their site. Furthermore, they provide API. KompalWeather utilizes this API.
 
 Take advantage of kompal weather to optimize your sauna experience!
 
