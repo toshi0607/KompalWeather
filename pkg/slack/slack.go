@@ -7,13 +7,13 @@ import (
 	"net/http"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
-	"github.com/toshi0607/kompal-weather/pkg/log"
+	"github.com/toshi0607/kompal-weather/pkg/logger"
 	"github.com/toshi0607/kompal-weather/pkg/message"
 )
 
 type Slack struct {
 	config *Config
-	log    *log.Log
+	log    *logger.Log
 }
 
 type Config struct {
@@ -23,7 +23,7 @@ type Config struct {
 	//Frequency    config.Frequency
 }
 
-func New(config *Config, log *log.Log) *Slack {
+func New(config *Config, log *logger.Log) *Slack {
 	return &Slack{
 		config: config,
 		log:    log,

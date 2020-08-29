@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ChimeraCoder/anaconda"
-	"github.com/toshi0607/kompal-weather/pkg/log"
+	"github.com/toshi0607/kompal-weather/pkg/logger"
 	"github.com/toshi0607/kompal-weather/pkg/message"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
@@ -13,7 +13,7 @@ import (
 
 type Twitter struct {
 	client *anaconda.TwitterApi
-	log    *log.Log
+	log    *logger.Log
 }
 
 type Config struct {
@@ -23,7 +23,7 @@ type Config struct {
 	AccessTokenSecret string
 }
 
-func New(config *Config, log *log.Log) *Twitter {
+func New(config *Config, log *logger.Log) *Twitter {
 	return &Twitter{
 		client: anaconda.NewTwitterApiWithCredentials(
 			config.AccessToken,

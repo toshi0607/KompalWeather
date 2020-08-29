@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -28,7 +29,7 @@ func (s *Server) watchHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		s.log.Info("fetched: %v", f)
+		s.log.Info("fetched: %+v", *f)
 
 		st, err := s.storage.Save(ctx, f)
 		if err != nil {
@@ -36,7 +37,7 @@ func (s *Server) watchHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		s.log.Info("saved: %v", st)
+		s.log.Info("saved: %+v", *st)
 
 		result, err := s.analyzer.Analyze(ctx)
 		if err != nil {
@@ -44,7 +45,8 @@ func (s *Server) watchHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		s.log.Info("result: %v", result)
+		time.Now()
+		s.log.Info("result: %+v", *result)
 
 		eg, ctx := errgroup.WithContext(ctx)
 		for _, n := range s.notifiers {

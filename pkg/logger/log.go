@@ -1,4 +1,4 @@
-package log
+package logger
 
 import (
 	"context"
@@ -42,11 +42,11 @@ func (l *Log) SetHandlerName(name string) {
 }
 
 // Need roles/logging.logWriter	to write in Cloud Logging
-func (l *Log) Info(format string, v ...interface{}) {
+func (l *Log) Info(format string, args ...interface{}) {
 	l.client.Logger(l.serviceName).Log(logging.Entry{
 		Severity: logging.Info,
 		Payload: Message{
-			Msg:         fmt.Sprintf(format, v),
+			Msg:         fmt.Sprintf(format, args...),
 			Version:     l.version,
 			HandlerName: l.handlerName,
 		},

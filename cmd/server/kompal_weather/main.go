@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/signal"
@@ -12,7 +13,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
 	"github.com/toshi0607/kompal-weather/pkg/http"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
-	"github.com/toshi0607/kompal-weather/pkg/log"
+	"github.com/toshi0607/kompal-weather/pkg/logger"
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/secret"
 	"github.com/toshi0607/kompal-weather/pkg/slack"
@@ -54,12 +55,16 @@ func realMain(_ []string) int {
 	}
 
 	// Init logger
-	l, err := log.New(ctx, c.GCPProjectID, c.ServiceName, c.Version)
+	l, err := logger.New(ctx, c.GCPProjectID, c.ServiceName, c.Version)
 	if err != nil {
 		fmt.Print(err)
 		return exitError
 	}
-	defer l.Close()
+	defer func() {
+		if err := l.Close(); err != nil {
+			log.Printf("failed to close: %s", err)
+		}
+	}()
 
 	// Init kompal
 	k := kompal.New(c.Kompal)
@@ -106,9 +111,9 @@ func realMain(_ []string) int {
 
 	// Graceful shutdown
 	if err := server.GracefulStop(ctx); err != nil {
-		l.Info("succeeded to stop server gracefully")
-	} else {
 		l.Info("failed to stop server gracefully")
+	} else {
+		l.Info("succeeded to stop server gracefully")
 	}
 
 	if err := wg.Wait(); err != nil {

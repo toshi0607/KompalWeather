@@ -9,7 +9,7 @@ import (
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
-	"github.com/toshi0607/kompal-weather/pkg/log"
+	"github.com/toshi0607/kompal-weather/pkg/logger"
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
 )
@@ -19,13 +19,13 @@ type Server struct {
 	storage   storage.Storage
 	notifiers []notifier.Notifier
 	analyzer  analyzer.Analyzer
-	log       *log.Log
+	log       *logger.Log
 
 	mux    *http.ServeMux
 	server *http.Server
 }
 
-func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer, l *log.Log) *Server {
+func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer, l *logger.Log) *Server {
 	server := &Server{
 		kompal:    f,
 		storage:   s,
