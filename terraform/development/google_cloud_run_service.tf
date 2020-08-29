@@ -40,27 +40,27 @@ resource "google_cloud_run_service" "kompal-weather-dev" {
         }
         env {
           name  = "SLACK_WEBHOOK_URL_SECRET_NAME"
-          value = "web_hook_url"
+          value = google_secret_manager_secret.web_hook_url.secret_id
         }
         env {
           name  = "KOMPAL_URL_SECRET_NAME"
-          value = "kompal_url"
+          value = google_secret_manager_secret.kompal_url.secret_id
         }
         env {
           name  = "TWITTER_ACCESS_TOKEN_SECRET_NAME"
-          value = "twitter_access_token"
+          value = google_secret_manager_secret.twitter_access_token.secret_id
         }
         env {
           name  = "TWITTER_ACCESS_TOKEN_SECRET_SECRET_NAME"
-          value = "twitter_access_token_secret"
+          value = google_secret_manager_secret.twitter_access_token_secret.secret_id
         }
         env {
           name  = "TWITTER_API_KEY_SECRET_NAME"
-          value = "twitter_api_key"
+          value = google_secret_manager_secret.twitter_api_key.secret_id
         }
         env {
           name  = "TWITTER_API_KEY_SECRET_SECRET_NAME"
-          value = "twitter_api_key_secret"
+          value = google_secret_manager_secret.twitter_api_key_secret.secret_id
         }
         env {
           name  = "VERSION"
