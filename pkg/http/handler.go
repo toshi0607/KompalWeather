@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-var handlerName string = "watchHandler"
+const handlerName = "watchHandler"
 
 // This application is intended to be hosted by Cloud Run which doesn't allow unauthenticated.
 // Called from Cloud Scheduler. Service account OIDC token with roles/run.invoker is required.

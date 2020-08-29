@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"cloud.google.com/go/logging"
 )
@@ -43,6 +44,7 @@ func (l *Log) SetHandlerName(name string) {
 
 // Need roles/logging.logWriter	to write in Cloud Logging
 func (l *Log) Info(format string, args ...interface{}) {
+	log.Printf(format, args...)
 	l.client.Logger(l.serviceName).Log(logging.Entry{
 		Severity: logging.Info,
 		Payload: Message{
@@ -54,6 +56,7 @@ func (l *Log) Info(format string, args ...interface{}) {
 }
 
 func (l *Log) Error(msg string, err error) {
+	log.Printf("%s%s", msg, err)
 	l.client.Logger(l.serviceName).Log(logging.Entry{
 		Severity: logging.Info,
 		Payload: Message{
