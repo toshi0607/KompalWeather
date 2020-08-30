@@ -63,6 +63,10 @@ func (s *Server) watchHandler() http.Handler {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			s.log.Error("failed to encode", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	})
 }

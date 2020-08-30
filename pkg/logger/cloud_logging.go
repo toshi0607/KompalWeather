@@ -19,7 +19,7 @@ type CloudLogging struct {
 
 type Message struct {
 	Err         string `json:",omitempty"`
-	HandlerName string `json:"handlerName",omitempty`
+	HandlerName string `json:"handlerName,omitempty"`
 	Msg         string `json:"msg"`
 	Version     string `json:"version"`
 	Environment string `json:"environment"`
