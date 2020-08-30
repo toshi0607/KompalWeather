@@ -1,5 +1,7 @@
 # KompalWeather
 
+![ci](https://github.com/toshi0607/KompalWeather/workflows/ci/badge.svg)
+
 ## What is KompalWeather?
 
 KompalWeather reports on how crowded kompal-yu is on Twitter ([@KompalWeather](https://twitter.com/KompalWeather)) and Slack. 
