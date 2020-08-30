@@ -4,7 +4,7 @@ run:
 
 .PHONY: build
 build:
-	go build -v .
+	go build -v cmd/server/kompal_weather/main.go
 
 .PHONY: test.s
 test.s:
