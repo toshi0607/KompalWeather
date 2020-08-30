@@ -16,7 +16,7 @@ Take advantage of kompal weather to optimize your sauna experience!
 
 * Notification about the state of congestion on
   * Twitter [@KompalWeather](https://twitter.com/KompalWeather)
-  * Slack channel via incoming webhook)
+  * Slack channel via incoming webhook
 * Record data in out Google Sheets every 15 minutes during business hours
 
 ### Plan
