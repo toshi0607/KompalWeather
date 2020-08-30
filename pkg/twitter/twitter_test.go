@@ -20,6 +20,10 @@ func TestTwitter_Type(t *testing.T) {
 }
 
 func TestTwitter_Notify(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping external test")
+	}
+
 	ctx := context.TODO()
 	apiKey := os.Getenv("TWITTER_API_KEY")
 	apiKeySecret := os.Getenv("TWITTER_API_KEY_SECRET")

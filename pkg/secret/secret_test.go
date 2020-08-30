@@ -7,6 +7,10 @@ import (
 )
 
 func TestSecret_Get(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping external test")
+	}
+
 	ctx := context.TODO()
 	gcpProjectID := os.Getenv("GCP_PROJECT_ID")
 	s, err := New()

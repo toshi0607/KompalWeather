@@ -11,6 +11,10 @@ import (
 )
 
 func TestSheets_Statuses(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping external test")
+	}
+
 	ctx := context.TODO()
 	spreadSheetID := os.Getenv("SPREAD_SHEET_ID")
 	si := os.Getenv("SHEET_ID")
@@ -39,6 +43,10 @@ func TestSheets_Statuses(t *testing.T) {
 }
 
 func TestSheets_Save(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping external test")
+	}
+
 	ctx := context.TODO()
 	spreadSheetID := os.Getenv("SPREAD_SHEET_ID")
 	si := os.Getenv("SHEET_ID")
