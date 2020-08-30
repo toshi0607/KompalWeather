@@ -20,6 +20,10 @@ func TestSlack_Type(t *testing.T) {
 }
 
 func TestSlack_Notify(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping external test")
+	}
+
 	ctx := context.TODO()
 	url := os.Getenv("WEBHOOK_URL")
 	s := New(
