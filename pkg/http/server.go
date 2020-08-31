@@ -14,6 +14,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/storage"
 )
 
+// Server represents a server
 type Server struct {
 	kompal    kompal.Fetcher
 	storage   storage.Storage
@@ -25,6 +26,7 @@ type Server struct {
 	server *http.Server
 }
 
+// New build a new Server
 func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer, l logger.Logger) *Server {
 	server := &Server{
 		kompal:    f,
@@ -41,6 +43,7 @@ func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer
 	return server
 }
 
+// Serve serves the server
 func (s *Server) Serve(ln net.Listener) error {
 	server := &http.Server{
 		Handler: s.mux,
@@ -54,6 +57,7 @@ func (s *Server) Serve(ln net.Listener) error {
 	return nil
 }
 
+// GracefulStop stops the server gracefully
 func (s *Server) GracefulStop(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }

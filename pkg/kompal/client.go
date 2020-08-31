@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -14,22 +15,26 @@ import (
 
 var _ Fetcher = (*Kompal)(nil)
 
+// Kompal represents Kompal-yu API
 type Kompal struct {
 	config *Config
 }
 
+// Config represents a configuration for Kompal-yu API
 type Config struct {
 	URL string
 }
 
-type KompalResponse struct {
+// Response represents a response from Kompal-yu API
+type Response struct {
 	MaleSauna   Sauna `json:"male_sauna"`
 	FemaleSauna Sauna `json:"female_sauna"`
 	Open        bool
 	Timestamp   time.Time
 }
 
-func (kr *KompalResponse) ToStatus() *status.Status {
+// ToStatus converts Response to status.Status
+func (kr *Response) ToStatus() *status.Status {
 	return &status.Status{
 		MaleSauna:   kr.MaleSauna.ToStatusSauna(kr.Open),
 		FemaleSauna: kr.FemaleSauna.ToStatusSauna(kr.Open),
@@ -37,6 +42,7 @@ func (kr *KompalResponse) ToStatus() *status.Status {
 	}
 }
 
+// Sauna represents status of sauna
 type Sauna int
 
 //　0 : 空いてます（0-2人）
@@ -50,6 +56,7 @@ const (
 	Full    = 3
 )
 
+// ToStatusSauna converts kompal.Sauna to status.Sauna
 func (s Sauna) ToStatusSauna(open bool) status.Sauna {
 	if !open {
 		return status.Off
@@ -68,10 +75,12 @@ func (s Sauna) ToStatusSauna(open bool) status.Sauna {
 	}
 }
 
+// New builds new Kompal
 func New(c *Config) *Kompal {
 	return &Kompal{c}
 }
 
+// Fetch fetches the latest status of Kompal-yu
 func (k *Kompal) Fetch(ctx context.Context) (*status.Status, error) {
 	// TODO: use ctx,make http client replaceable
 	resp, err := http.Get(k.config.URL)
@@ -81,13 +90,17 @@ func (k *Kompal) Fetch(ctx context.Context) (*status.Status, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("bad response status code: %d", resp.StatusCode)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("failed to close resp body: %s", err)
+		}
+	}()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	var kr KompalResponse
+	var kr Response
 	if err := json.Unmarshal(body, &kr); err != nil {
 		return nil, err
 	}

@@ -28,7 +28,7 @@ func TestSlack_Notify(t *testing.T) {
 	url := os.Getenv("WEBHOOK_URL")
 	s := New(
 		&Config{
-			WebhookUrl:   url,
+			WebhookURL:   url,
 			ChannelNames: []string{"dev"},
 			UserName:     "kompal-weather",
 		},

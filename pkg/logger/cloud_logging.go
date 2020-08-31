@@ -9,6 +9,7 @@ import (
 
 var _ Logger = (*CloudLogging)(nil)
 
+// CloudLogging represents Cloud Logging
 type CloudLogging struct {
 	client      *logging.Client
 	serviceName string
@@ -17,6 +18,7 @@ type CloudLogging struct {
 	environment string
 }
 
+// Message represents a payload of a logging.Entry
 type Message struct {
 	Err         string `json:",omitempty"`
 	HandlerName string `json:"handlerName,omitempty"`
@@ -25,8 +27,9 @@ type Message struct {
 	Environment string `json:"environment"`
 }
 
-func NewCloudLogging(ctx context.Context, gcpProjectId, serviceName, version, environment string) (*CloudLogging, error) {
-	client, err := logging.NewClient(ctx, gcpProjectId)
+// NewCloudLogging builds new CloudLogging
+func NewCloudLogging(ctx context.Context, gcpProjectID, serviceName, version, environment string) (*CloudLogging, error) {
+	client, err := logging.NewClient(ctx, gcpProjectID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to new logger: %v", err)
 	}
@@ -38,14 +41,17 @@ func NewCloudLogging(ctx context.Context, gcpProjectId, serviceName, version, en
 	}, nil
 }
 
+// Close closes a cloud logging client
 func (l *CloudLogging) Close() error {
 	return l.client.Close()
 }
 
+// SetHandlerName sets a handler name
 func (l *CloudLogging) SetHandlerName(name string) {
 	l.handlerName = name
 }
 
+// Info sends information Cloud Logging
 // Need roles/logging.logWriter	to write in Cloud Logging
 func (l *CloudLogging) Info(format string, args ...interface{}) {
 	l.client.Logger(l.serviceName).Log(logging.Entry{

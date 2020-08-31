@@ -18,14 +18,14 @@ func TestSheets_Statuses(t *testing.T) {
 	ctx := context.TODO()
 	spreadSheetID := os.Getenv("SPREAD_SHEET_ID")
 	si := os.Getenv("SHEET_ID")
-	sheetId, err := strconv.ParseUint(si, 10, 32)
+	sheetID, err := strconv.ParseUint(si, 10, 32)
 	if err != nil {
 		t.Fatalf("error: %s", err)
 	}
 
 	c, err := NewSheets(&SheetsConfig{
 		SpreadSheetID: spreadSheetID,
-		SheetId:       uint(sheetId),
+		SheetID:       uint(sheetID),
 	})
 	if err != nil {
 		t.Fatalf("error: %s", err)
@@ -50,14 +50,14 @@ func TestSheets_Save(t *testing.T) {
 	ctx := context.TODO()
 	spreadSheetID := os.Getenv("SPREAD_SHEET_ID")
 	si := os.Getenv("SHEET_ID")
-	sheetId, err := strconv.ParseUint(si, 10, 32)
+	sheetID, err := strconv.ParseUint(si, 10, 32)
 	if err != nil {
 		t.Fatalf("error: %s", err)
 	}
 
 	c, err := NewSheets(&SheetsConfig{
 		SpreadSheetID: spreadSheetID,
-		SheetId:       uint(sheetId),
+		SheetID:       uint(sheetID),
 	})
 	if err != nil {
 		t.Fatalf("error: %s", err)

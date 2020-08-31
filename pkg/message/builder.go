@@ -7,6 +7,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
 )
 
+// Build builds a message from a result of an analysis
 func Build(r *analyzer.Result) string {
 	if r.MaleTrend == analyzer.Close {
 		return "本日の営業は終了しました。また来てね！"
