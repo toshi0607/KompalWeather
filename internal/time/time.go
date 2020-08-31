@@ -10,14 +10,17 @@ var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
 var layout = time.RFC3339
 
+// ToJST converts time.Time to JST time
 func ToJST(t time.Time) time.Time {
 	return t.In(jst)
 }
 
+// ToJSTString converts time.Time to string
 func ToJSTString(t time.Time) string {
 	return t.In(jst).Format(layout)
 }
 
+// ToJSTTime converts string to time.Time in JST location
 func ToJSTTime(s string) (time.Time, error) {
 	t, err := time.ParseInLocation(layout, s, jst)
 	if err != nil {

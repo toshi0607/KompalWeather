@@ -12,15 +12,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/twitter"
 )
 
-type Frequency int
-
-const (
-	Unknown    = 0
-	Increasing = 1
-	Decreasing = 2
-	All        = 3
-)
-
+// Config is a whole configuration for komal-weather application
 type Config struct {
 	Slack        *slack.Config
 	Twitter      *twitter.Config
@@ -36,21 +28,36 @@ type Config struct {
 }
 
 type env struct {
-	GCPProjectID                       string   `envconfig:"GCP_PROJECT_ID" required:"true"`
-	ServerPort                         int      `envconfig:"SERVER_PORT" required:"true"`
-	SlackChannelNames                  []string `envconfig:"SLACK_CHANNEL_NAMES" required:"true"`
-	SlackUserName                      string   `envconfig:"SLACK_USER_NAME" required:"true" default:"kompal-weather"`
-	SlackWebhookUrlSecretName          string   `envconfig:"SLACK_WEBHOOK_URL_SECRET_NAME" required:"true"`
-	TwitterAPIKeySecretName            string   `envconfig:"TWITTER_API_KEY_SECRET_NAME" required:"false"`
-	TwitterAPIKeySecretSecretName      string   `envconfig:"TWITTER_API_KEY_SECRET_SECRET_NAME" required:"false"`
-	TwitterAccessTokenSecretName       string   `envconfig:"TWITTER_ACCESS_TOKEN_SECRET_NAME" required:"false"`
-	TwitterAccessTokenSecretSecretName string   `envconfig:"TWITTER_ACCESS_TOKEN_SECRET_SECRET_NAME" required:"false"`
-	KompalUrlSecretName                string   `envconfig:"KOMPAL_URL_SECRET_NAME" required:"true"`
-	SpreadSheetID                      string   `envconfig:"SPREAD_SHEET_ID" required:"true"`
-	SheetID                            uint     `envconfig:"SHEET_ID" required:"true"`
-	ServiceName                        string   `envconfig:"SERVICE_NAME" required:"true"`
-	Version                            string   `envconfig:"VERSION" required:"true"`
-	Environment                        string   `envconfig:"ENVIRONMENT" required:"true"`
+	// GCPProjectID is a GCP project id where this application is hosted
+	GCPProjectID string `envconfig:"GCP_PROJECT_ID" required:"true"`
+	// ServerPort is a port number this application listens to
+	ServerPort int `envconfig:"SERVER_PORT" required:"true"`
+	// SlackChannelNames are names of notification target Slack channels
+	SlackChannelNames []string `envconfig:"SLACK_CHANNEL_NAMES" required:"true"`
+	// SlackUserName is a user name used when notifying slack channels
+	SlackUserName string `envconfig:"SLACK_USER_NAME" required:"true" default:"kompal-weather"`
+	// SlackWebhookURLSecretName is a secret_id of Slack incoming webhook URL
+	SlackWebhookURLSecretName string `envconfig:"SLACK_WEBHOOK_URL_SECRET_NAME" required:"true"`
+	// TwitterAPIKeySecretName is a secret_id of Twitter API key
+	TwitterAPIKeySecretName string `envconfig:"TWITTER_API_KEY_SECRET_NAME" required:"false"`
+	// TwitterAPIKeySecretSecretName is a secret_id of Twitter API key secret
+	TwitterAPIKeySecretSecretName string `envconfig:"TWITTER_API_KEY_SECRET_SECRET_NAME" required:"false"`
+	// TwitterAccessTokenSecretName is a secret_id of Twitter access token
+	TwitterAccessTokenSecretName string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET_NAME" required:"false"`
+	// TwitterAccessTokenSecretSecretName is a secret_id of Twitter access token secret
+	TwitterAccessTokenSecretSecretName string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET_SECRET_NAME" required:"false"`
+	// KompalURLSecretName is a secret_id of API endpoint for Komparu-yu
+	KompalURLSecretName string `envconfig:"KOMPAL_URL_SECRET_NAME" required:"true"`
+	// SpreadSheetID is a id of spreadheet
+	SpreadSheetID string `envconfig:"SPREAD_SHEET_ID" required:"true"`
+	// SheetID is a id of each sheet
+	SheetID uint `envconfig:"SHEET_ID" required:"true"`
+	// ServiceName is a name of this service
+	ServiceName string `envconfig:"SERVICE_NAME" required:"true"`
+	// Version is a version of this application
+	Version string `envconfig:"VERSION" required:"true"`
+	// Environment is environment of current application. env const must be used.
+	Environment string `envconfig:"ENVIRONMENT" required:"true"`
 }
 
 const (
@@ -66,6 +73,7 @@ func (e *env) validate() error {
 	return nil
 }
 
+// New builds new Config
 func New(secret *secret.Secret) *Config {
 	return &Config{
 		Slack:  &slack.Config{},
@@ -75,6 +83,7 @@ func New(secret *secret.Secret) *Config {
 	}
 }
 
+// Init inits Config
 func (c *Config) Init() error {
 	ctx := context.TODO()
 
@@ -88,12 +97,12 @@ func (c *Config) Init() error {
 	}
 
 	// Secret
-	c.secret.AddGCPProjectId(e.GCPProjectID)
-	kompalUrl, err := c.secret.Get(ctx, e.KompalUrlSecretName)
+	c.secret.AddGCPProjectID(e.GCPProjectID)
+	kompalURL, err := c.secret.Get(ctx, e.KompalURLSecretName)
 	if err != nil {
 		return err
 	}
-	slackWebhookUrl, err := c.secret.Get(ctx, e.SlackWebhookUrlSecretName)
+	slackWebhookURL, err := c.secret.Get(ctx, e.SlackWebhookURLSecretName)
 	if err != nil {
 		return err
 	}
@@ -114,9 +123,9 @@ func (c *Config) Init() error {
 		return err
 	}
 
-	c.Kompal.URL = kompalUrl
+	c.Kompal.URL = kompalURL
 	c.Slack = &slack.Config{
-		WebhookUrl:   slackWebhookUrl,
+		WebhookURL:   slackWebhookURL,
 		UserName:     e.SlackUserName,
 		ChannelNames: e.SlackChannelNames,
 	}
@@ -133,12 +142,13 @@ func (c *Config) Init() error {
 	c.Environment = e.Environment
 	c.Sheets = &storage.SheetsConfig{
 		SpreadSheetID: e.SpreadSheetID,
-		SheetId:       e.SheetID,
+		SheetID:       e.SheetID,
 	}
 
 	return nil
 }
 
+// IsLocal returns env is local or not
 func (c *Config) IsLocal() bool {
 	return c.Environment == envLocal
 }

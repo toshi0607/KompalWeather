@@ -15,16 +15,19 @@ import (
 
 var _ Storage = (*Sheets)(nil)
 
+// SheetsConfig is a configuration of Sheets
 type SheetsConfig struct {
 	SpreadSheetID string
-	SheetId       uint
+	SheetID       uint
 }
 
+// Sheets is representation of Sheets
 type Sheets struct {
 	service *spreadsheet.Service
 	config  *SheetsConfig
 }
 
+// NewSheets builds new Sheets
 func NewSheets(c *SheetsConfig) (*Sheets, error) {
 	ctx := context.TODO()
 	client, err := google.DefaultClient(ctx, spreadsheet.Scope)
@@ -39,12 +42,13 @@ func NewSheets(c *SheetsConfig) (*Sheets, error) {
 	}, nil
 }
 
+// Statuses returns the last two statuses from a spreadsheet
 func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
 	ss, err := s.service.FetchSpreadsheet(s.config.SpreadSheetID)
 	if err != nil {
 		return nil, err
 	}
-	sheet, err := ss.SheetByID(s.config.SheetId)
+	sheet, err := ss.SheetByID(s.config.SheetID)
 	if err != nil {
 		return nil, err
 	}
@@ -101,12 +105,13 @@ func (s *Sheets) Statuses(ctx context.Context) ([]status.Status, error) {
 	}, nil
 }
 
+// Save saves status in a spreadsheet
 func (s *Sheets) Save(ctx context.Context, st *status.Status) (*status.Status, error) {
 	ss, err := s.service.FetchSpreadsheet(s.config.SpreadSheetID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch the spreadsheet: %v", err)
 	}
-	sheet, err := ss.SheetByID(s.config.SheetId)
+	sheet, err := ss.SheetByID(s.config.SheetID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to find the sheet: %v", err)
 	}

@@ -17,7 +17,7 @@ func TestSecret_Get(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error: %s", err)
 	}
-	s.AddGCPProjectId(gcpProjectID)
+	s.AddGCPProjectID(gcpProjectID)
 
 	if _, err := s.Get(ctx, "test"); err != nil {
 		t.Fatalf("error: %s", err)

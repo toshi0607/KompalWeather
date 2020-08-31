@@ -11,11 +11,13 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
 )
 
+// Twitter is representation of Twitter
 type Twitter struct {
 	client *anaconda.TwitterApi
 	log    logger.Logger
 }
 
+// Config is a configuration of Twitter
 type Config struct {
 	APIKey            string
 	APIKeySecret      string
@@ -23,6 +25,7 @@ type Config struct {
 	AccessTokenSecret string
 }
 
+// New builds new Twitter
 func New(config *Config, log logger.Logger) *Twitter {
 	return &Twitter{
 		client: anaconda.NewTwitterApiWithCredentials(
@@ -35,10 +38,12 @@ func New(config *Config, log logger.Logger) *Twitter {
 	}
 }
 
+// Type returns the type of the notifier
 func (t Twitter) Type() string {
 	return "twitter"
 }
 
+// Notify notifies result on Twitter
 func (t Twitter) Notify(ctx context.Context, result *analyzer.Result) error {
 	if result.MaleTrend == analyzer.Constant && result.FemaleTrend == analyzer.Constant {
 		t.log.Info("skip twitter notification")

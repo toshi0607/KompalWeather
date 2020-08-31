@@ -9,11 +9,13 @@ import (
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
+// Secret represents a Secret
 type Secret struct {
 	client       *secretmanager.Client
-	gcpProjectId string
+	gcpProjectID string
 }
 
+// New builds new Secret
 func New() (*Secret, error) {
 	ctx := context.TODO()
 	client, err := secretmanager.NewClient(ctx)
@@ -23,17 +25,19 @@ func New() (*Secret, error) {
 	return &Secret{client: client}, nil
 }
 
-func (s *Secret) AddGCPProjectId(id string) {
-	s.gcpProjectId = id
+// AddGCPProjectID adds gcpProjectID to Secret
+func (s *Secret) AddGCPProjectID(id string) {
+	s.gcpProjectID = id
 }
 
+// Get returns the latest secret version data by secret_id
 func (s *Secret) Get(ctx context.Context, name string) (string, error) {
-	if s.gcpProjectId == "" {
-		return "", errors.New("gcpProjectId is required")
+	if s.gcpProjectID == "" {
+		return "", errors.New("gcpProjectID is required")
 	}
 
 	req := &secretmanagerpb.AccessSecretVersionRequest{
-		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", s.gcpProjectId, name),
+		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", s.gcpProjectID, name),
 	}
 	resp, err := s.client.AccessSecretVersion(ctx, req)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
@@ -11,18 +12,20 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/message"
 )
 
+// Slack is representation of Slack
 type Slack struct {
 	config *Config
 	log    logger.Logger
 }
 
+// Config is a configuration of Slack
 type Config struct {
-	WebhookUrl   string
+	WebhookURL   string
 	ChannelNames []string
 	UserName     string
-	//Frequency    config.Frequency
 }
 
+// New builds new Slack
 func New(config *Config, log logger.Logger) *Slack {
 	return &Slack{
 		config: config,
@@ -30,10 +33,12 @@ func New(config *Config, log logger.Logger) *Slack {
 	}
 }
 
+// Type returns the type of the notifier
 func (s Slack) Type() string {
 	return "slack"
 }
 
+// Notify notifies result in Slack channel
 func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	if result.MaleTrend == analyzer.Constant && result.FemaleTrend == analyzer.Constant {
 		s.log.Info("skip slack notification")
@@ -46,7 +51,7 @@ func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		s.config.WebhookUrl,
+		s.config.WebhookURL,
 		bytes.NewBuffer([]byte(j)),
 	)
 	if err != nil {
@@ -58,7 +63,11 @@ func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	if err != nil {
 		return fmt.Errorf("failed to send request to slack: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("failed to close resp body: %s", err)
+		}
+	}()
 
 	return nil
 }

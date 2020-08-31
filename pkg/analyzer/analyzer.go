@@ -14,22 +14,30 @@ type analyzer struct {
 }
 
 type (
+	// Result is an analysis of the last two statuses of how Komparu-yu is crowded
 	Result struct {
 		MaleTrend    Trend
 		FemaleTrend  Trend
 		LatestStatus status.Status
 	}
 
+	// Trend is the trend of Kompal-yu
 	Trend int
 )
 
 const (
-	Unknown    = 0
+	// Unknown is unknown
+	Unknown = 0
+	// Increasing is increasing
 	Increasing = 1
+	// Decreasing is decreasing
 	Decreasing = 2
-	Constant   = 3
-	Open       = 4
-	Close      = 5
+	// Constant is constant
+	Constant = 3
+	// Open is open
+	Open = 4
+	// Close is close
+	Close = 5
 )
 
 func (t Trend) String() string {
@@ -53,6 +61,7 @@ func (t Trend) String() string {
 
 const expectedNumberOfStatuses = 2
 
+// New builds a new Analyzer
 func New(storage storage.Storage) Analyzer {
 	return analyzer{
 		storage: storage,

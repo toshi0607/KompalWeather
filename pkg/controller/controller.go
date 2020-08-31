@@ -17,7 +17,8 @@ type controller struct {
 	analyzer  analyzer.Analyzer
 }
 
-func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer) *controller {
+// New builds a new Controller
+func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer) Controller {
 	return &controller{
 		kompal:    f,
 		storage:   s,
