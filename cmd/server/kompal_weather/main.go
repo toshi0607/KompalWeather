@@ -14,6 +14,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/http"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
+	"github.com/toshi0607/kompal-weather/pkg/monitoring"
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/secret"
 	"github.com/toshi0607/kompal-weather/pkg/slack"
@@ -92,8 +93,15 @@ func realMain(_ []string) int {
 	// Init analyzer
 	an := analyzer.New(sheets)
 
+	// Init monitor
+	m, err := monitoring.New(c.GCPProjectID)
+	if err != nil {
+		l.Error("failed to init monitoring", err)
+		return exitError
+	}
+
 	// Server start
-	server := http.New(k, sheets, []notifier.Notifier{sl, tw}, an, l)
+	server := http.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, l)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {

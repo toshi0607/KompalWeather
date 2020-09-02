@@ -15,6 +15,8 @@ type Secret struct {
 	gcpProjectID string
 }
 
+// Add close
+
 // New builds new Secret
 func New() (*Secret, error) {
 	ctx := context.TODO()
