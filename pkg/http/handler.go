@@ -39,6 +39,10 @@ func (s *Server) watchHandler() http.Handler {
 		}
 		s.log.Info("saved: %+v", *st)
 
+		if err := s.monitor.CreatePoint(ctx, st); err != nil {
+			s.log.Error("failed to create point", err)
+		}
+
 		result, err := s.analyzer.Analyze(ctx)
 		if err != nil {
 			s.log.Error("failed to analyze", err)
