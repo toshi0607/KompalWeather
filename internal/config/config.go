@@ -46,7 +46,7 @@ type env struct {
 	TwitterAccessTokenSecretName string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET_NAME" required:"false"`
 	// TwitterAccessTokenSecretSecretName is a secret_id of Twitter access token secret
 	TwitterAccessTokenSecretSecretName string `envconfig:"TWITTER_ACCESS_TOKEN_SECRET_SECRET_NAME" required:"false"`
-	// KompalURLSecretName is a secret_id of API endpoint for Komparu-yu
+	// KompalURLSecretName is a secret_id of API endpoint for Kompal-yu
 	KompalURLSecretName string `envconfig:"KOMPAL_URL_SECRET_NAME" required:"true"`
 	// SpreadSheetID is a id of spreadheet
 	SpreadSheetID string `envconfig:"SPREAD_SHEET_ID" required:"true"`

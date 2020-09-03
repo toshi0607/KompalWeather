@@ -2,7 +2,7 @@ package status
 
 import "time"
 
-// Status represents how Komparu-yu is crowded
+// Status represents how Kompal-yu is crowded
 type Status struct {
 	MaleSauna   Sauna `json:"male_sauna"`
 	FemaleSauna Sauna `json:"female_sauna"`

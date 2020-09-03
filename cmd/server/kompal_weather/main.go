@@ -31,7 +31,7 @@ const (
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error:\n%s\n", err)
+			log.Printf("recovered, error: %v", err)
 			os.Exit(1)
 		}
 	}()
@@ -44,14 +44,19 @@ func realMain(_ []string) int {
 	// init secret manager client
 	s, err := secret.New()
 	if err != nil {
-		fmt.Print(err)
+		log.Printf("failed to create new secret: %v", err)
 		return exitError
 	}
+	defer func() {
+		if err := s.Close(); err != nil {
+			fmt.Print(err)
+		}
+	}()
 
 	// Init config
 	c := config.New(s)
 	if err := c.Init(); err != nil {
-		fmt.Print(err)
+		log.Printf("failed to create new config: %v", err)
 		return exitError
 	}
 
@@ -63,12 +68,12 @@ func realMain(_ []string) int {
 		var err error
 		l, err = logger.NewCloudLogging(ctx, c.GCPProjectID, c.ServiceName, c.Version, c.Environment)
 		if err != nil {
-			fmt.Print(err)
+			log.Printf("failed to create new logging: %v", err)
 			return exitError
 		}
 		defer func() {
 			if err := l.Close(); err != nil {
-				log.Printf("failed to close: %s", err)
+				l.Error("failed to close logging: %s", err)
 			}
 		}()
 	}
@@ -99,6 +104,11 @@ func realMain(_ []string) int {
 		l.Error("failed to init monitoring", err)
 		return exitError
 	}
+	defer func() {
+		if err := l.Close(); err != nil {
+			l.Error("failed to close monitoring: %s", err)
+		}
+	}()
 
 	// Server start
 	server := http.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, l)
@@ -120,12 +130,12 @@ func realMain(_ []string) int {
 	case <-sigCh:
 		l.Info("received SIGTERM, exiting server gracefully")
 	case <-ctx.Done():
-		l.Info("contest done")
+		l.Info("context done")
 	}
 
 	// Graceful shutdown
 	if err := server.GracefulStop(ctx); err != nil {
-		l.Info("failed to stop server gracefully")
+		l.Error("failed to stop server gracefully", err)
 	} else {
 		l.Info("succeeded to stop server gracefully")
 	}

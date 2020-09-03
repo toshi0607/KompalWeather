@@ -11,6 +11,12 @@ resource "google_project_iam_member" "kompal_weather_is_secretmanager_admin" {
   role    = "roles/secretmanager.admin"
 }
 
+resource "google_project_iam_member" "kompal_weather_is_monitoring_editor" {
+  member  = "serviceAccount:${google_service_account.kompal_weather.email}"
+  project = var.gcp_project
+  role    = "roles/monitoring.editor"
+}
+
 resource "google_project_iam_member" "kompal_weather_invoker_dev_is_run_invoker" {
   member  = "serviceAccount:${google_service_account.kompal_weather_invoker.email}"
   project = var.gcp_project
