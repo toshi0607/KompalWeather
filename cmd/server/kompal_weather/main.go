@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/google/martian/v3/log"
 	"github.com/toshi0607/kompal-weather/internal/config"
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
 	"github.com/toshi0607/kompal-weather/pkg/http"
@@ -31,7 +31,7 @@ const (
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Errorf("recovered", err)
+			log.Printf("recovered, error: %v", err)
 			os.Exit(1)
 		}
 	}()
@@ -44,7 +44,7 @@ func realMain(_ []string) int {
 	// init secret manager client
 	s, err := secret.New()
 	if err != nil {
-		log.Errorf("failed to create new secret", err)
+		log.Printf("failed to create new secret: %v", err)
 		return exitError
 	}
 	defer func() {
@@ -56,7 +56,7 @@ func realMain(_ []string) int {
 	// Init config
 	c := config.New(s)
 	if err := c.Init(); err != nil {
-		log.Errorf("failed to create new config", err)
+		log.Printf("failed to create new config: %v", err)
 		return exitError
 	}
 
@@ -68,7 +68,7 @@ func realMain(_ []string) int {
 		var err error
 		l, err = logger.NewCloudLogging(ctx, c.GCPProjectID, c.ServiceName, c.Version, c.Environment)
 		if err != nil {
-			log.Errorf("failed to create new logging", err)
+			log.Printf("failed to create new logging: %v", err)
 			return exitError
 		}
 		defer func() {
