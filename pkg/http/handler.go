@@ -41,6 +41,7 @@ func (s *Server) watchHandler() http.Handler {
 
 		if err := s.monitor.CreatePoint(ctx, st); err != nil {
 			s.log.Error("failed to create point", err)
+			// Keep processing
 		}
 
 		result, err := s.analyzer.Analyze(ctx)

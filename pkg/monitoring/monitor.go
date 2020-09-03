@@ -18,7 +18,12 @@ type Monitor struct {
 	gcpProjectID string
 }
 
-// Add close
+type PointType string
+
+const (
+	typeMale   = PointType("custom.googleapis.com/male_status")
+	typeFemale = PointType("custom.googleapis.com/female_status")
+)
 
 // New builds new Monitor
 func New(ID string) (*Monitor, error) {
@@ -33,75 +38,63 @@ func New(ID string) (*Monitor, error) {
 	}, nil
 }
 
-func (m Monitor) CreatePoint(ctx context.Context, s *status.Status) error {
-	male := &monitoringpb.Point{
-		Interval: &monitoringpb.TimeInterval{
-			EndTime: &googlepb.Timestamp{
-				Seconds: s.Timestamp.Unix(),
-			},
-		},
-		Value: &monitoringpb.TypedValue{
-			Value: &monitoringpb.TypedValue_Int64Value{
-				Int64Value: int64(s.MaleSauna),
-			},
-		},
-	}
-	female := &monitoringpb.Point{
-		Interval: &monitoringpb.TimeInterval{
-			EndTime: &googlepb.Timestamp{
-				Seconds: s.Timestamp.Unix() + 1,
-			},
-		},
-		Value: &monitoringpb.TypedValue{
-			Value: &monitoringpb.TypedValue_Int64Value{
-				Int64Value: int64(s.FemaleSauna),
-			},
-		},
-	}
+// Close closes the client connection
+func (m Monitor) Close() error {
+	return m.client.Close()
+}
 
-	if err := m.client.CreateTimeSeries(ctx, &monitoringpb.CreateTimeSeriesRequest{
-		Name: fmt.Sprintf("projects/%s", m.gcpProjectID),
-		TimeSeries: []*monitoringpb.TimeSeries{
-			{
-				Metric: &metricpb.Metric{
-					Type: "custom.googleapis.com/male_status",
-				},
-				Resource: &monitoredrespb.MonitoredResource{
-					Type: "global",
-					Labels: map[string]string{
-						"project_id": m.gcpProjectID,
-					},
-				},
-				Points: []*monitoringpb.Point{
-					male,
-				},
-			},
-		},
-	}); err != nil {
+// CreatePoint creates points for each status in Cloud Monitoring
+func (m Monitor) CreatePoint(ctx context.Context, s *status.Status) error {
+	male := m.createPoint(s.MaleSauna, s.Timestamp.Unix())
+	female := m.createPoint(s.FemaleSauna, s.Timestamp.Unix()+1)
+
+	if err := m.createTimeSeries(ctx, typeMale, male); err != nil {
 		return err
 	}
-
-	if err := m.client.CreateTimeSeries(ctx, &monitoringpb.CreateTimeSeriesRequest{
-		Name: fmt.Sprintf("projects/%s", m.gcpProjectID),
-		TimeSeries: []*monitoringpb.TimeSeries{
-			{
-				Metric: &metricpb.Metric{
-					Type: "custom.googleapis.com/female_status",
-				},
-				Resource: &monitoredrespb.MonitoredResource{
-					Type: "global",
-					Labels: map[string]string{
-						"project_id": m.gcpProjectID,
-					},
-				},
-				Points: []*monitoringpb.Point{
-					female,
-				},
-			},
-		},
-	}); err != nil {
+	if err := m.createTimeSeries(ctx, typeFemale, female); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (m Monitor) createTimeSeries(ctx context.Context, t PointType, p *monitoringpb.Point) error {
+	if err := m.client.CreateTimeSeries(ctx, &monitoringpb.CreateTimeSeriesRequest{
+		Name: fmt.Sprintf("projects/%s", m.gcpProjectID),
+		TimeSeries: []*monitoringpb.TimeSeries{
+			{
+				Metric: &metricpb.Metric{
+					Type:   string(t),
+					Labels: nil,
+				},
+				Resource: &monitoredrespb.MonitoredResource{
+					Type: "global",
+					Labels: map[string]string{
+						"project_id": m.gcpProjectID,
+					},
+				},
+				Points: []*monitoringpb.Point{
+					p,
+				},
+			},
+		},
+	}); err != nil {
+		return fmt.Errorf("failed to createTimeSeries: %v", err)
+	}
+	return nil
+}
+
+func (m Monitor) createPoint(s status.Sauna, timestampSec int64) *monitoringpb.Point {
+	return &monitoringpb.Point{
+		Interval: &monitoringpb.TimeInterval{
+			EndTime: &googlepb.Timestamp{
+				Seconds: timestampSec,
+			},
+		},
+		Value: &monitoringpb.TypedValue{
+			Value: &monitoringpb.TypedValue_Int64Value{
+				Int64Value: int64(s),
+			},
+		},
+	}
 }

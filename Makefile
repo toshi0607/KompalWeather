@@ -17,3 +17,7 @@ tidy:
 .PHONY: lint
 lint:
 	golangci-lint run -v --tests ./...
+
+.PHONY: watch
+watch:
+	curl -sS http://localhost:8080/watch -X POST

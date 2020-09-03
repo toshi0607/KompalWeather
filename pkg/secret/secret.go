@@ -15,8 +15,6 @@ type Secret struct {
 	gcpProjectID string
 }
 
-// Add close
-
 // New builds new Secret
 func New() (*Secret, error) {
 	ctx := context.TODO()
@@ -25,6 +23,11 @@ func New() (*Secret, error) {
 		return nil, err
 	}
 	return &Secret{client: client}, nil
+}
+
+// Close closes the client connection
+func (s *Secret) Close() error {
+	return s.client.Close()
 }
 
 // AddGCPProjectID adds gcpProjectID to Secret

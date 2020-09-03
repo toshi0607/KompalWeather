@@ -14,7 +14,7 @@ type analyzer struct {
 }
 
 type (
-	// Result is an analysis of the last two statuses of how Komparu-yu is crowded
+	// Result is an analysis of the last two statuses of how Kompal-yu is crowded
 	Result struct {
 		MaleTrend    Trend
 		FemaleTrend  Trend
