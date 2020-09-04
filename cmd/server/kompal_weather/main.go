@@ -11,6 +11,7 @@ import (
 
 	"github.com/toshi0607/kompal-weather/internal/config"
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
+	"github.com/toshi0607/kompal-weather/pkg/controller"
 	"github.com/toshi0607/kompal-weather/pkg/http"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
@@ -111,7 +112,7 @@ func realMain(_ []string) int {
 	}()
 
 	// Server start
-	server := http.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, l)
+	server := http.New(controller.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, l), l)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {

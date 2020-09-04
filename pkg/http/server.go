@@ -7,37 +7,25 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/toshi0607/kompal-weather/pkg/analyzer"
-	"github.com/toshi0607/kompal-weather/pkg/kompal"
+	"github.com/toshi0607/kompal-weather/pkg/controller"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
-	"github.com/toshi0607/kompal-weather/pkg/monitoring"
-	"github.com/toshi0607/kompal-weather/pkg/notifier"
-	"github.com/toshi0607/kompal-weather/pkg/storage"
 )
 
 // Server represents a server
 type Server struct {
-	kompal    kompal.Fetcher
-	storage   storage.Storage
-	notifiers []notifier.Notifier
-	analyzer  analyzer.Analyzer
-	monitor   *monitoring.Monitor
-	log       logger.Logger
+	controller controller.Controller
 
+	log    logger.Logger
 	mux    *http.ServeMux
 	server *http.Server
 }
 
 // New build a new Server
-func New(f kompal.Fetcher, s storage.Storage, ns []notifier.Notifier, a analyzer.Analyzer, m *monitoring.Monitor, l logger.Logger) *Server {
+func New(c controller.Controller, l logger.Logger) *Server {
 	server := &Server{
-		kompal:    f,
-		storage:   s,
-		notifiers: ns,
-		analyzer:  a,
-		monitor:   m,
-		log:       l,
+		controller: c,
 
+		log: l,
 		mux: http.NewServeMux(),
 	}
 
