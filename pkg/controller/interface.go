@@ -1,8 +1,12 @@
 package controller
 
-import "context"
+import (
+	"context"
+
+	"github.com/toshi0607/kompal-weather/pkg/analyzer"
+)
 
 // Controller is an interface of a controller
 type Controller interface {
-	Run(ctx context.Context) error
+	Watch(ctx context.Context) (*analyzer.Result, error)
 }

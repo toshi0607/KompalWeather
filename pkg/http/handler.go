@@ -3,9 +3,6 @@ package http
 import (
 	"encoding/json"
 	"net/http"
-	"time"
-
-	"golang.org/x/sync/errgroup"
 )
 
 const handlerName = "watchHandler"
@@ -23,46 +20,9 @@ func (s *Server) watchHandler() http.Handler {
 		s.log.SetHandlerName(handlerName)
 		s.log.Info("%s started", handlerName)
 
-		f, err := s.kompal.Fetch(ctx)
+		result, err := s.controller.Watch(ctx)
 		if err != nil {
-			s.log.Error("failed to fetch kompal status", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		s.log.Info("fetched: %+v", *f)
-
-		st, err := s.storage.Save(ctx, f)
-		if err != nil {
-			s.log.Error("failed to save status", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		s.log.Info("saved: %+v", *st)
-
-		if err := s.monitor.CreatePoint(ctx, st); err != nil {
-			s.log.Error("failed to create point", err)
-			// Keep processing
-		}
-
-		result, err := s.analyzer.Analyze(ctx)
-		if err != nil {
-			s.log.Error("failed to analyze", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		time.Now()
-		s.log.Info("result: %+v", *result)
-
-		eg, ctx := errgroup.WithContext(ctx)
-		for _, n := range s.notifiers {
-			n := n
-			eg.Go(func() error {
-				s.log.Info("notification type: %v", n.Type())
-				return n.Notify(ctx, result)
-			})
-		}
-		if err := eg.Wait(); err != nil {
-			s.log.Error("failed to notify", err)
+			s.log.Error("failed to watch", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
