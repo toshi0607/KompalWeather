@@ -20,6 +20,7 @@ func newLoginPage(p *agouti.Page) (*loginPage, error) {
 	if err := p.Navigate(loginPageURL); err != nil {
 		return nil, err
 	}
+	time.Sleep(5 * time.Second)
 	return &loginPage{page: p}, nil
 }
 
@@ -53,6 +54,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.googleOAuthButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click google OAuth button: %v", err)
 	}
+	time.Sleep(5 * time.Second)
 
 	if err := p.loginInput().Fill(id); err != nil {
 		return nil, fmt.Errorf("failed to fill login input: %v", err)
