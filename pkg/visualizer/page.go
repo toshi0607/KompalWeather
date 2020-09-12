@@ -102,9 +102,6 @@ func (p monitoringPage) malePNGDownloadButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-3\"]/div/div/button[4]")
 }
 
-// //*[@id="_0rif_mat-menu-panel-4"]/div/div/button[4]
-
-// //*[@id="_0rif_ic_more_vert_24px-Icon"]
 func (p monitoringPage) femaleThreeDotsToggleButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"main\"]/div/div/central-page-area/div/div/pcc-content-viewport/div/div/pangolin-home/cfc-router-outlet/div/sd-dashboard-page/div/div/div/sd-dashboard-root/sd-grid/div/div[2]/sd-chart-card/mat-card/mat-card-header/sd-chart-header/div/div/sd-icon")
 }
@@ -112,8 +109,6 @@ func (p monitoringPage) femaleThreeDotsToggleButton() *agouti.Selection {
 func (p monitoringPage) femalePNGDownloadButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-4\"]/div/div/button[4]")
 }
-
-//
 
 func (p monitoringPage) oneDayButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[3]")
@@ -163,10 +158,6 @@ func (p monitoringPage) download(rt ReportType) error {
 		return err
 	}
 	time.Sleep(5 * time.Second)
-	//if err := p.maleThreeDotsToggleButton().Click(); err != nil {
-	//	return err
-	//}
-	//time.Sleep(3 * time.Second)
 
 	if err := p.femaleThreeDotsToggleButton().Click(); err != nil {
 		return err
@@ -176,10 +167,6 @@ func (p monitoringPage) download(rt ReportType) error {
 		return err
 	}
 	time.Sleep(5 * time.Second)
-	//if err := p.femaleThreeDotsToggleButton().Click(); err != nil {
-	//	return err
-	//}
-	//time.Sleep(3 * time.Second)
 
 	return nil
 }

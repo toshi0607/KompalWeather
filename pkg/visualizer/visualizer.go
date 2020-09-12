@@ -26,19 +26,24 @@ const (
 )
 
 func New(c *config.VisualizerConfig, g *gcs.GCS, l logger.Logger) (*Visualizer, error) {
-	return &Visualizer{
-		config: c,
-		gcs:    g,
-		log:    l,
-	}, nil
+	return &Visualizer{config: c, gcs: g, log: l}, nil
 }
 
 // Save saves male and female report files in GCS
 func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
+	hasMale, hasFemale, err := v.hasFile(ctx, rt)
+	if err != nil {
+		return "", fmt.Errorf("failed to check file existence: %v", err)
+	}
+	if hasMale && hasFemale {
+		v.log.Info("male & female files already exist in GCS")
+		return "", nil
+	}
+
 	localPath, err := ioutil.TempDir("", fmt.Sprintf("%v", time.Now().Unix()))
 	v.log.Info("localPath: %s", localPath)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create tmp dir: %v", err)
 	}
 	defer func() {
 		if err := os.RemoveAll(localPath); err != nil {
@@ -46,22 +51,9 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 		}
 	}()
 
-	driver := agouti.ChromeDriver(
-		agouti.ChromeOptions("prefs", map[string]interface{}{
-			"download.default_directory": localPath,
-		}),
-		agouti.ChromeOptions("args", []string{
-			//"--headless",           // headless mode
-			"--window-size=1280,800", // Size of window
-			"--no-sandbox",           // Sandbox requires namespace permissions that we don't have on a container
-			"--disable-gpu",          // There is no GPU on our Ubuntu box
-		}),
-		agouti.Debug,
-	)
-
-	// This should be done by each request
-	if err := driver.Start(); err != nil {
-		return "", err
+	driver, err := v.initDriver(localPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to init driver: %v", err)
 	}
 	defer func() {
 		if err := driver.Stop(); err != nil {
@@ -70,86 +62,105 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	}()
 	page, err := driver.NewPage()
 	if err != nil {
-		return "", err
-	}
-
-	malePath, err := v.objectPath(maleFileName, rt)
-	if err != nil {
-		return "", err
-	}
-	hasMale, err := v.gcs.HasObject(ctx, malePath)
-	if err != nil {
-		return "", err
-	}
-	femalePath, err := v.objectPath(femaleFileName, rt)
-	if err != nil {
-		return "", err
-	}
-	hasFemale, err := v.gcs.HasObject(ctx, femalePath)
-	if err != nil {
-		return "", err
-	}
-	if hasMale && hasFemale {
-		v.log.Info("male & female files already exist in GCS")
-		return "", err
+		return "", fmt.Errorf("failed to open new page: %v", err)
 	}
 
 	lp, err := newLoginPage(page)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to open login page: %v", err)
 	}
 	loggedIn, err := lp.login(v.config.Mail, v.config.PW)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to login: %v", err)
 	}
 
 	mp, err := newMonitoringPage(loggedIn)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to open monitoring page: %v", err)
 	}
 	if err := mp.download(rt); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to download files: %v", err)
 	}
 
 	if !hasMale {
 		if err := v.uploadFiles(ctx, localPath, maleFileName, rt); err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to update male file: %v", err)
 		}
 	}
 	if !hasFemale {
 		if err := v.uploadFiles(ctx, localPath, femaleFileName, rt); err != nil {
-			return "", err
+			return "", fmt.Errorf("failed to update female file: %v", err)
 		}
 	}
 
 	return "", nil
 }
 
+func (v Visualizer) hasFile(ctx context.Context, rt ReportType) (bool, bool, error) {
+	malePath, err := v.objectPath(maleFileName, rt)
+	if err != nil {
+		return false, false, fmt.Errorf("failed to build male object path: %v", err)
+	}
+	hasMale, err := v.gcs.HasObject(ctx, malePath)
+	if err != nil {
+		return false, false, fmt.Errorf("failed to check male object: %v", err)
+	}
+	femalePath, err := v.objectPath(femaleFileName, rt)
+	if err != nil {
+		return false, false, fmt.Errorf("failed to build female object path: %v", err)
+	}
+	hasFemale, err := v.gcs.HasObject(ctx, femalePath)
+	if err != nil {
+		return false, false, fmt.Errorf("failed to check female object: %v", err)
+	}
+	return hasMale, hasFemale, nil
+}
+
+func (v Visualizer) initDriver(localPath string) (*agouti.WebDriver, error) {
+	driver := agouti.ChromeDriver(
+		agouti.ChromeOptions("prefs", map[string]interface{}{
+			"download.default_directory": localPath,
+		}),
+		agouti.ChromeOptions("args", []string{
+			"--headless",             // headless mode
+			"--window-size=1280,800", // Size of window
+			"--no-sandbox",           // Sandbox requires namespace permissions that we don't have on a container
+			"--disable-gpu",          // There is no GPU on our Ubuntu box
+		}),
+		agouti.Debug,
+	)
+
+	if err := driver.Start(); err != nil {
+		return nil, fmt.Errorf("failed to start driver: %v", err)
+	}
+	return driver, nil
+}
+
 func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string, rt ReportType) error {
 	f, err := os.Open(localPath + "/" + fileName)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open local file: %v", err)
 	}
 	defer func() {
 		if err := f.Close(); err != nil {
-			fmt.Print(err)
+			v.log.Error("failed to close local file", err)
 		}
 	}()
 	fileInfo, err := f.Stat()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get file info: %v", err)
 	}
 
 	b := make([]byte, fileInfo.Size())
 	buffer := bufio.NewReader(f)
 	_, err = buffer.Read(b)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read local file to buffer: %v", err)
 	}
 
 	op, err := v.objectPath(fileName, rt)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to build object path: %v", err)
 	}
 	if err := v.gcs.Put(ctx, b, op); err != nil {
 		return err
