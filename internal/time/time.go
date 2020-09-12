@@ -27,7 +27,7 @@ func ToJSTString(t time.Time) string {
 func ToJSTTime(s string) (time.Time, error) {
 	t, err := time.ParseInLocation(layout, s, jst)
 	if err != nil {
-		return time.Time{}, err
+		return time.Time{}, fmt.Errorf("failed to parse in location: %v", err)
 	}
 	return t, nil
 }
@@ -47,25 +47,29 @@ func (p Period) String() string {
 func YesterdayPeriod(now time.Time) Period {
 	yesterday := now.AddDate(0, 0, -1)
 	return Period{
-		Start: time.Date(yesterday.Year(), yesterday.Month(), yesterday.Day(), 0, 0, 0, 0, jst),
-		End:   time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, jst),
+		Start: date(yesterday.Year(), yesterday.Month(), yesterday.Day()),
+		End:   date(now.Year(), now.Month(), now.Day()),
 	}
 }
 
 func WeeklyPeriod(now time.Time) Period {
 	aWeekAgo := now.AddDate(0, 0, -7)
 	return Period{
-		Start: time.Date(aWeekAgo.Year(), aWeekAgo.Month(), aWeekAgo.Day(), 0, 0, 0, 0, jst),
-		End:   time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, jst),
+		Start: date(aWeekAgo.Year(), aWeekAgo.Month(), aWeekAgo.Day()),
+		End:   date(now.Year(), now.Month(), now.Day()),
 	}
 }
 
 func MonthlyPeriod(now time.Time) Period {
 	yesterday := now.AddDate(0, 0, -1)
 	return Period{
-		Start: time.Date(yesterday.Year(), yesterday.Month(), 1, 0, 0, 0, 0, jst),
-		End:   time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, jst),
+		Start: date(yesterday.Year(), yesterday.Month(), 1),
+		End:   date(now.Year(), now.Month(), now.Day()),
 	}
+}
+
+func date(y int, m time.Month, d int) time.Time {
+	return time.Date(y, m, d, 0, 0, 0, 0, jst)
 }
 
 func NowJST() time.Time {
