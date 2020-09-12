@@ -6,15 +6,15 @@ import (
 
 func TestConfig_IsLocal(t *testing.T) {
 	tests := map[string]struct {
-		config *Config
+		config *CoreConfig
 		want   bool
 	}{
 		"local": {
-			config: &Config{Environment: envLocal},
+			config: &CoreConfig{Environment: envLocal},
 			want:   true,
 		},
 		"development": {
-			config: &Config{Environment: envDevelopment},
+			config: &CoreConfig{Environment: envDevelopment},
 			want:   false,
 		},
 	}

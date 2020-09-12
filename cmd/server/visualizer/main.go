@@ -10,23 +10,17 @@ import (
 	"syscall"
 
 	"github.com/toshi0607/kompal-weather/internal/config"
-	"github.com/toshi0607/kompal-weather/pkg/analyzer"
-	"github.com/toshi0607/kompal-weather/pkg/controller"
+	"github.com/toshi0607/kompal-weather/pkg/gcs"
 	"github.com/toshi0607/kompal-weather/pkg/http"
-	"github.com/toshi0607/kompal-weather/pkg/kompal"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
-	"github.com/toshi0607/kompal-weather/pkg/monitoring"
-	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/secret"
-	"github.com/toshi0607/kompal-weather/pkg/slack"
-	"github.com/toshi0607/kompal-weather/pkg/storage"
-	"github.com/toshi0607/kompal-weather/pkg/twitter"
+	"github.com/toshi0607/kompal-weather/pkg/visualizer"
 	"golang.org/x/sync/errgroup"
 )
 
 const (
-	exitOK = iota
-	exitError
+	exitOK    = 0
+	exitError = 1
 )
 
 func main() {
@@ -55,7 +49,7 @@ func realMain(_ []string) int {
 	}()
 
 	// Init config
-	c := config.New(s)
+	c := config.NewVisualizer(s)
 	if err := c.Init(); err != nil {
 		log.Printf("failed to create new config: %v", err)
 		return exitError
@@ -79,40 +73,22 @@ func realMain(_ []string) int {
 		}()
 	}
 
-	// Init kompal
-	k := kompal.New(c.Kompal)
-
-	// Init storage
-	sheets, err := storage.NewSheets(c.Sheets)
+	// Init GCS
+	g, err := gcs.New(c.BucketName)
 	if err != nil {
-		l.Error("failed to init sheets", err)
+		log.Printf("failed to create new gcs: %v", err)
 		return exitError
 	}
 
-	// Init notifiers
-	// Init twitter
-	tw := twitter.New(c.Twitter, l)
-
-	// Init slack
-	sl := slack.New(c.Slack, l)
-
-	// Init analyzer
-	an := analyzer.New(sheets)
-
-	// Init monitor
-	m, err := monitoring.New(c.GCPProjectID)
+	// Init visualizer
+	v, err := visualizer.New(c, g, l)
 	if err != nil {
-		l.Error("failed to init monitoring", err)
+		l.Error("failed to create new visualizer", err)
 		return exitError
 	}
-	defer func() {
-		if err := l.Close(); err != nil {
-			l.Error("failed to close monitoring: %s", err)
-		}
-	}()
 
 	// Server start
-	server := http.New(controller.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, l), l)
+	server := http.NewVisualizer(v, l)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {

@@ -10,3 +10,9 @@ resource "google_service_account" "kompal_weather_invoker" {
   display_name = "kompal-weather-invoker-dev"
   project      = var.gcp_project
 }
+
+resource "google_service_account" "kompal_weather_visualizer" {
+  account_id   = "kompal-weather-visualizer-dev"
+  display_name = "kompal-weather-visualizer-dev"
+  project      = var.gcp_project
+}

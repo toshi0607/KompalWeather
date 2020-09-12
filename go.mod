@@ -5,6 +5,7 @@ go 1.14
 require (
 	cloud.google.com/go v0.65.0
 	cloud.google.com/go/logging v1.1.0
+	cloud.google.com/go/storage v1.10.0
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
 	github.com/armon/go-metrics v0.3.4 // indirect
@@ -19,6 +20,7 @@ require (
 	github.com/hashicorp/go-immutable-radix v1.2.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/sclevine/agouti v3.0.0+incompatible
 	golang.org/x/net v0.0.0-20200822124328-c89045814202
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
