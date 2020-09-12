@@ -34,3 +34,9 @@ resource "google_project_iam_member" "kompal_weather_visualizer_dev_is_secretman
   project = var.gcp_project
   role    = "roles/secretmanager.admin"
 }
+
+resource "google_project_iam_member" "kompal_weather_visualizer_dev_is_logging_logwriter" {
+  member  = "serviceAccount:${google_service_account.kompal_weather_visualizer.email}"
+  project = var.gcp_project
+  role    = "roles/logging.logWriter"
+}
