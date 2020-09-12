@@ -25,7 +25,7 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 		var req RequestBody
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			s.log.Error("failed to decode request body", err)
-			http.Error(w, "can't read body", http.StatusBadRequest)
+			http.Error(w, "failed to read body", http.StatusBadRequest)
 			return
 		}
 		if !req.ReportType.IsValid() {

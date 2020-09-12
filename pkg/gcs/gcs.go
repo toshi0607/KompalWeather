@@ -19,7 +19,7 @@ func New(bucketName string) (*GCS, error) {
 	ctx := context.TODO()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create new GCS client: %v", err)
 	}
 	return &GCS{
 		client:     client,
@@ -41,9 +41,9 @@ func (g *GCS) Put(ctx context.Context, data []byte, path string) error {
 	}()
 
 	if n, err := w.Write(data); err != nil {
-		return err
+		return fmt.Errorf("failed to write data: %v", err)
 	} else if n != len(data) {
-		return err
+		return fmt.Errorf("failed to write data, got: %d, want: %d, err: %v", n, len(data), err)
 	}
 
 	return nil
@@ -52,7 +52,7 @@ func (g *GCS) Put(ctx context.Context, data []byte, path string) error {
 func (g *GCS) Get(ctx context.Context, path string) ([]byte, error) {
 	r, err := g.client.Bucket(g.bucketName).Object(path).NewReader(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create new object reader: %v", err)
 	}
 	defer func() {
 		if err := r.Close(); err != nil {
@@ -61,7 +61,7 @@ func (g *GCS) Get(ctx context.Context, path string) ([]byte, error) {
 	}()
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read object: %v", err)
 	}
 	return b, nil
 }

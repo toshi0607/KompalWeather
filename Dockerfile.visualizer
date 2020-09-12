@@ -1,0 +1,23 @@
+FROM golang:1.14.6
+
+WORKDIR /project
+
+COPY ./go.* ./
+RUN go mod download
+
+COPY . ./
+
+RUN CGO_ENABLED=0 GOOS=linux go install -v ./cmd/server/visualizer
+
+
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates chromium chromium-chromedriver
+
+COPY --from=0 /go/bin/visualizer /bin/visualizer
+
+RUN addgroup -g 1001 app && adduser -D -G app -u 1001 app
+
+USER 1001
+
+CMD ["/bin/visualizer"]
