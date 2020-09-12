@@ -12,12 +12,13 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/twitter"
 )
 
-// Config is a whole configuration for komal-weather application
-type Config struct {
-	Slack        *slack.Config
-	Twitter      *twitter.Config
-	Kompal       *kompal.Config
-	Sheets       *storage.SheetsConfig
+// CoreConfig is a whole configuration for komal-weather application
+type CoreConfig struct {
+	Slack   *slack.Config
+	Twitter *twitter.Config
+	Kompal  *kompal.Config
+	Sheets  *storage.SheetsConfig
+	// Common config
 	ServerPort   int
 	GCPProjectID string
 	Version      string
@@ -27,7 +28,7 @@ type Config struct {
 	secret *secret.Secret
 }
 
-type env struct {
+type coreEnv struct {
 	// GCPProjectID is a GCP project id where this application is hosted
 	GCPProjectID string `envconfig:"GCP_PROJECT_ID" required:"true"`
 	// ServerPort is a port number this application listens to
@@ -66,16 +67,16 @@ const (
 	envProduction  = "production"
 )
 
-func (e *env) validate() error {
+func (e *coreEnv) validate() error {
 	if e.Environment != envDevelopment && e.Environment != envProduction && e.Environment != envLocal {
-		return fmt.Errorf("env is invalid, env:%s", e.Environment)
+		return fmt.Errorf("coreEnv is invalid, coreEnv:%s", e.Environment)
 	}
 	return nil
 }
 
-// New builds new Config
-func New(secret *secret.Secret) *Config {
-	return &Config{
+// NewCore builds new CoreConfig
+func NewCore(secret *secret.Secret) *CoreConfig {
+	return &CoreConfig{
 		Slack:  &slack.Config{},
 		Kompal: &kompal.Config{},
 		Sheets: &storage.SheetsConfig{},
@@ -83,17 +84,17 @@ func New(secret *secret.Secret) *Config {
 	}
 }
 
-// Init inits Config
-func (c *Config) Init() error {
+// Init inits CoreConfig
+func (c *CoreConfig) Init() error {
 	ctx := context.TODO()
 
 	// Environment variable
-	var e env
+	var e coreEnv
 	if err := envconfig.Process("", &e); err != nil {
 		return fmt.Errorf("failed to process envconfig: %s", err)
 	}
 	if err := e.validate(); err != nil {
-		return fmt.Errorf("failed to validate env: %s", err)
+		return fmt.Errorf("failed to validate coreEnv: %s", err)
 	}
 
 	// Secret
@@ -148,7 +149,7 @@ func (c *Config) Init() error {
 	return nil
 }
 
-// IsLocal returns env is local or not
-func (c *Config) IsLocal() bool {
+// IsLocal returns coreEnv is local or not
+func (c *CoreConfig) IsLocal() bool {
 	return c.Environment == envLocal
 }

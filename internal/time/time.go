@@ -1,6 +1,9 @@
 package time
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
@@ -24,7 +27,51 @@ func ToJSTString(t time.Time) string {
 func ToJSTTime(s string) (time.Time, error) {
 	t, err := time.ParseInLocation(layout, s, jst)
 	if err != nil {
-		return time.Time{}, err
+		return time.Time{}, fmt.Errorf("failed to parse in location: %v", err)
 	}
 	return t, nil
+}
+
+type Period struct {
+	Start time.Time
+	End   time.Time
+}
+
+// String returns string expression of Period
+func (p Period) String() string {
+	format := "2006-01-02"
+	prevDate := p.End.AddDate(0, 0, -1)
+	return fmt.Sprintf("%s-%s", p.Start.Format(format), prevDate.Format(format))
+}
+
+func YesterdayPeriod(now time.Time) Period {
+	yesterday := now.AddDate(0, 0, -1)
+	return Period{
+		Start: date(yesterday.Year(), yesterday.Month(), yesterday.Day()),
+		End:   date(now.Year(), now.Month(), now.Day()),
+	}
+}
+
+func WeeklyPeriod(now time.Time) Period {
+	aWeekAgo := now.AddDate(0, 0, -7)
+	return Period{
+		Start: date(aWeekAgo.Year(), aWeekAgo.Month(), aWeekAgo.Day()),
+		End:   date(now.Year(), now.Month(), now.Day()),
+	}
+}
+
+func MonthlyPeriod(now time.Time) Period {
+	yesterday := now.AddDate(0, 0, -1)
+	return Period{
+		Start: date(yesterday.Year(), yesterday.Month(), 1),
+		End:   date(now.Year(), now.Month(), now.Day()),
+	}
+}
+
+func date(y int, m time.Month, d int) time.Time {
+	return time.Date(y, m, d, 0, 0, 0, 0, jst)
+}
+
+func NowJST() time.Time {
+	return time.Now().In(jst)
 }

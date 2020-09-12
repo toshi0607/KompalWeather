@@ -16,7 +16,7 @@ resource "google_cloud_scheduler_job" "dev1" {
   name      = "kompal-weather-dev"
   project   = var.gcp_project
   region    = var.gcp_region
-  schedule  = " */15 0,15-23 * * mon,wed-sat"
+  schedule  = " */15 0,14-23 * * mon,wed-sat"
   time_zone = "Asia/Tokyo"
 
   depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]
@@ -39,7 +39,7 @@ resource "google_cloud_scheduler_job" "dev2" {
   name      = "kompal-weather-dev2"
   project   = var.gcp_project
   region    = var.gcp_region
-  schedule  = "*/15 0,10-23 * * sun"
+  schedule  = "*/15 0,9-23 * * sun"
   time_zone = "Asia/Tokyo"
 
   depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]
@@ -62,7 +62,7 @@ resource "google_cloud_scheduler_job" "dev3" {
   name      = "kompal-weather-dev3"
   project   = var.gcp_project
   region    = var.gcp_region
-  schedule  = "00 0 * * tue"
+  schedule  = "*/15 0 * * tue"
   time_zone = "Asia/Tokyo"
 
   depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]

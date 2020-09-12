@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-const handlerName = "watchHandler"
+const watchHandlerName = "watchHandler"
 
 // This application is intended to be hosted by Cloud Run which doesn't allow unauthenticated.
 // Called from Cloud Scheduler. Service account OIDC token with roles/run.invoker is required.
-func (s *Server) watchHandler() http.Handler {
+func (s *CoreServer) watchHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusBadRequest)
@@ -17,8 +17,8 @@ func (s *Server) watchHandler() http.Handler {
 		}
 
 		ctx := r.Context()
-		s.log.SetHandlerName(handlerName)
-		s.log.Info("%s started", handlerName)
+		s.log.SetHandlerName(watchHandlerName)
+		s.log.Info("%s started", watchHandlerName)
 
 		result, err := s.controller.Watch(ctx)
 		if err != nil {

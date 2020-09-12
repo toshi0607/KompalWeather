@@ -50,6 +50,8 @@ func (t Twitter) Notify(ctx context.Context, result *analyzer.Result) error {
 		return nil
 	}
 
+	// Tweet with image
+	// https://github.com/ChimeraCoder/anaconda/issues/95#issuecomment-326771861
 	m := message.Build(result)
 	if _, err := t.client.PostTweet(m, nil); err != nil {
 		return fmt.Errorf("failed to tweet: %v", err)

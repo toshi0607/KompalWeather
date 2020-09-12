@@ -11,8 +11,8 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/logger"
 )
 
-// Server represents a server
-type Server struct {
+// CoreServer represents a server
+type CoreServer struct {
 	controller controller.Controller
 
 	log    logger.Logger
@@ -20,9 +20,9 @@ type Server struct {
 	server *http.Server
 }
 
-// New build a new Server
-func New(c controller.Controller, l logger.Logger) *Server {
-	server := &Server{
+// NewCore build a new CoreServer
+func NewCore(c controller.Controller, l logger.Logger) Server {
+	server := &CoreServer{
 		controller: c,
 
 		log: l,
@@ -35,7 +35,7 @@ func New(c controller.Controller, l logger.Logger) *Server {
 }
 
 // Serve serves the server
-func (s *Server) Serve(ln net.Listener) error {
+func (s *CoreServer) Serve(ln net.Listener) error {
 	server := &http.Server{
 		Handler: s.mux,
 	}
@@ -49,10 +49,10 @@ func (s *Server) Serve(ln net.Listener) error {
 }
 
 // GracefulStop stops the server gracefully
-func (s *Server) GracefulStop(ctx context.Context) error {
+func (s *CoreServer) GracefulStop(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }
 
-func (s *Server) registerHandlers() {
+func (s *CoreServer) registerHandlers() {
 	s.mux.Handle("/watch", s.watchHandler())
 }
