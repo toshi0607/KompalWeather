@@ -69,7 +69,9 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to open login page: %v", err)
 	}
-	lp.page.Screenshot("tmp/after-google.png")
+	if err := lp.page.Screenshot("tmp/after-google.png"); err != nil {
+		v.log.Error("failed to take screenshot", err)
+	}
 	if err := v.uploadFiles(ctx, "tmp", "after-google.png", rt); err != nil {
 		v.log.Error("failed to upload screenshot", err)
 	}
