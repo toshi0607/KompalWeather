@@ -14,6 +14,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/logger"
 )
 
+// Visualizer represents visualizer
 type Visualizer struct {
 	config *config.VisualizerConfig
 	gcs    *gcs.GCS
@@ -27,25 +28,26 @@ const (
 	lastPageHTMLFileName = "last-page.html"
 )
 
+// New builds new Visualizer
 func New(c *config.VisualizerConfig, g *gcs.GCS, l logger.Logger) (*Visualizer, error) {
 	return &Visualizer{config: c, gcs: g, log: l}, nil
 }
 
 // Save saves male and female report files in GCS
-func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
+func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 	hasMale, hasFemale, err := v.hasFile(ctx, rt)
 	if err != nil {
-		return "", fmt.Errorf("failed to check file existence: %v", err)
+		return nil, fmt.Errorf("failed to check file existence: %v", err)
 	}
 	if hasMale && hasFemale {
 		v.log.Info("male & female files already exist in GCS")
-		return "", nil
+		return nil, nil
 	}
 
 	localPath, err := ioutil.TempDir("", fmt.Sprintf("%v", time.Now().Unix()))
 	v.log.Info("localPath: %s", localPath)
 	if err != nil {
-		return "", fmt.Errorf("failed to create tmp dir: %v", err)
+		return nil, fmt.Errorf("failed to create tmp dir: %v", err)
 	}
 	defer func() {
 		if err := os.RemoveAll(localPath); err != nil {
@@ -55,7 +57,7 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 
 	driver, err := v.initDriver(localPath)
 	if err != nil {
-		return "", fmt.Errorf("failed to init driver: %v", err)
+		return nil, fmt.Errorf("failed to init driver: %v", err)
 	}
 	defer func() {
 		if err := driver.Stop(); err != nil {
@@ -64,10 +66,10 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	}()
 	page, err := driver.NewPage()
 	if err != nil {
-		return "", fmt.Errorf("failed to open new page: %v", err)
+		return nil, fmt.Errorf("failed to open new page: %v", err)
 	}
 	defer func() {
-		v.log.Info("take screenshot")
+		v.log.Info("collecting logs...")
 		if err := page.Screenshot(fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName)); err != nil {
 			v.log.Error("failed to take screenshot, error:", err)
 		}
@@ -80,67 +82,74 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 			v.log.Error("failed to save HTML, error:", err)
 		}
 
-		if err := v.uploadFiles(ctx, localPath, lastPagePNGFileName, ""); err != nil {
+		if _, err := v.uploadFiles(ctx, localPath, lastPagePNGFileName, ""); err != nil {
 			v.log.Error("failed to upload PNG, error:", err)
 		}
-		if err := v.uploadFiles(ctx, localPath, lastPageHTMLFileName, ""); err != nil {
+		if _, err := v.uploadFiles(ctx, localPath, lastPageHTMLFileName, ""); err != nil {
 			v.log.Error("failed to upload HTML, error:", err)
 		}
 	}()
 
-	lp, err := newLoginPage(page)
+	lp, err := newLoginPage(page, v.log)
 	if err != nil {
-		return "", fmt.Errorf("failed to open login page: %v", err)
+		return nil, fmt.Errorf("failed to open login page: %v", err)
 	}
 
 	loggedIn, err := lp.login(v.config.Mail, v.config.PW)
 	if err != nil {
-		return "", fmt.Errorf("failed to login: %v", err)
+		return nil, fmt.Errorf("failed to login: %v", err)
 	}
 
-	mp, err := newMonitoringPage(loggedIn)
+	mp, err := newMonitoringPage(loggedIn, v.log)
 	if err != nil {
-		return "", fmt.Errorf("failed to open monitoring page: %v", err)
+		return nil, fmt.Errorf("failed to open monitoring page: %v", err)
 	}
-	// test
-	//if err := mp.page.FindByID("Email").Fill(v.config.Mail); err != nil {
-	//	return "", fmt.Errorf("failed to fill login input: %v", err)
-	//}
-	//if err := mp.page.FindByID("next").Click(); err != nil {
-	//	return "", fmt.Errorf("failed to click ID next button: %v", err)
-	//}
-	//time.Sleep(15 * time.Second)
-	//
-	//if err := mp.page.FindByID("password").Fill(v.config.PW); err != nil {
-	//	return "", fmt.Errorf("failed to fill pw input: %v", err)
-	//}
-	//if err := mp.page.FindByID("submit").Click(); err != nil {
-	//	return "", fmt.Errorf("failed to click pw submit button: %v", err)
-	//}
-	//time.Sleep(15 * time.Second)
-	//
-	//if err := mp.page.FindByID("submit").Click(); err != nil {
-	//	return "", fmt.Errorf("failed to click pw submit button: %v", err)
-	//}
-	//time.Sleep(30 * time.Second)
 
-	// test
+	// When the login attempt is considered to be suspicious
+	// if err := mp.page.FindByID("Email").Fill(v.config.Mail); err != nil {
+	// 	 return "", fmt.Errorf("failed to fill login input: %v", err)
+	// }
+	// if err := mp.page.FindByID("next").Click(); err != nil {
+	// 	 return "", fmt.Errorf("failed to click ID next button: %v", err)
+	// }
+	// time.Sleep(15 * time.Second)
+	//
+	// if err := mp.page.FindByID("password").Fill(v.config.PW); err != nil {
+	// 	 return "", fmt.Errorf("failed to fill pw input: %v", err)
+	// }
+	// if err := mp.page.FindByID("submit").Click(); err != nil {
+	//   return "", fmt.Errorf("failed to click pw submit button: %v", err)
+	// }
+	// time.Sleep(15 * time.Second)
+	//
+	// if err := mp.page.FindByID("submit").Click(); err != nil {
+	//   return "", fmt.Errorf("failed to click pw submit button: %v", err)
+	// }
+	// time.Sleep(30 * time.Second)
+	// It's necessary to choose the same number on my smartphone as shown in the screen on cloud...
+	// When this happens often, I need to implement slack notification with screenshot.
+
 	if err := mp.download(rt); err != nil {
-		return "", fmt.Errorf("failed to download files: %v", err)
+		return nil, fmt.Errorf("failed to download files: %v", err)
 	}
 
+	files := make([]string, 2)
 	if !hasMale {
-		if err := v.uploadFiles(ctx, localPath, maleFileName, rt); err != nil {
-			return "", fmt.Errorf("failed to update male file: %v", err)
+		file, err := v.uploadFiles(ctx, localPath, maleFileName, rt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update male file: %v", err)
 		}
+		files = append(files, file)
 	}
 	if !hasFemale {
-		if err := v.uploadFiles(ctx, localPath, femaleFileName, rt); err != nil {
-			return "", fmt.Errorf("failed to update female file: %v", err)
+		file, err := v.uploadFiles(ctx, localPath, femaleFileName, rt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update female file: %v", err)
 		}
+		files = append(files, file)
 	}
 
-	return "", nil
+	return files, nil
 }
 
 func (v Visualizer) hasFile(ctx context.Context, rt ReportType) (bool, bool, error) {
@@ -173,7 +182,7 @@ func (v Visualizer) initDriver(localPath string) (*agouti.WebDriver, error) {
 			"--window-size=1280,800", // Size of window
 			"--no-sandbox",           // Sandbox requires namespace permissions that we don't have on a container
 			"--disable-gpu",          // There is no GPU on our Ubuntu box
-			"--lang=ja",
+			"--lang=ja",              // Language
 		}),
 		agouti.Debug,
 	)
@@ -184,10 +193,10 @@ func (v Visualizer) initDriver(localPath string) (*agouti.WebDriver, error) {
 	return driver, nil
 }
 
-func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string, rt ReportType) error {
+func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string, rt ReportType) (string, error) {
 	f, err := os.Open(localPath + "/" + fileName)
 	if err != nil {
-		return fmt.Errorf("failed to open local file: %v", err)
+		return "", fmt.Errorf("failed to open local file: %v", err)
 	}
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -196,36 +205,37 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 	}()
 	fileInfo, err := f.Stat()
 	if err != nil {
-		return fmt.Errorf("failed to get file info: %v", err)
+		return "", fmt.Errorf("failed to get file info: %v", err)
 	}
 
 	b := make([]byte, fileInfo.Size())
 	buffer := bufio.NewReader(f)
 	_, err = buffer.Read(b)
 	if err != nil {
-		return fmt.Errorf("failed to read local file to buffer: %v", err)
+		return "", fmt.Errorf("failed to read local file to buffer: %v", err)
 	}
 
 	op, err := v.objectPath(fileName, rt)
 	if err != nil {
-		return fmt.Errorf("failed to build object path: %v", err)
+		return "", fmt.Errorf("failed to build object path: %v", err)
 	}
 	if err := v.gcs.Put(ctx, b, op); err != nil {
-		return err
+		return "", err
 	}
 	v.log.Info("file uploaded! bucket: %s, objectPath: %s", v.config.BucketName, op)
 
-	return nil
+	return op, nil
 }
 
 // objectPath returns full path for GCS
 // Example:
-//   daily:   2020-09-09-2020-09-09-male.png
-//   weekly:  2020-12-28-2021-01-03-female.png
-//   monthly: 2020-12-01-2020-12-31-male.png
+//   daily:   daily/2020-09-09-2020-09-09-male.png
+//   weekly:  weekly/2020-12-28-2021-01-03-female.png
+//   monthly: monthly/2020-12-01-2020-12-31-male.png
+//   logs:    logs/1599983507/last-page.png
 func (v Visualizer) objectPath(fileName string, rt ReportType) (string, error) {
 	if rt == "" {
-		return fmt.Sprintf("%v/%s", time.Now().Unix(), fileName), nil
+		return fmt.Sprintf("logs/%v/%s", time.Now().Unix(), fileName), nil
 	}
 	var gender string
 	if fileName == maleFileName {

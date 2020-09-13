@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sclevine/agouti"
+	"github.com/toshi0607/kompal-weather/pkg/logger"
 )
 
 const (
@@ -14,13 +15,21 @@ const (
 
 type loginPage struct {
 	page *agouti.Page
+	log  logger.Logger
 }
 
-func newLoginPage(p *agouti.Page) (*loginPage, error) {
+func newLoginPage(p *agouti.Page, l logger.Logger) (*loginPage, error) {
 	if err := p.Navigate(loginPageURL); err != nil {
 		return nil, err
 	}
 	time.Sleep(10 * time.Second)
+
+	t, err := p.Title()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get login page title: %v", err)
+	}
+	l.Info("after navigation to SO login page, title: %s", t)
+
 	return &loginPage{page: p}, nil
 }
 
@@ -54,9 +63,12 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.googleOAuthButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click google OAuth button: %v", err)
 	}
-	time.Sleep(25 * time.Second)
-	t, _ := p.page.Title()
-	fmt.Printf("after google auth, %s", t)
+	time.Sleep(15 * time.Second)
+	t, err := p.page.Title()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get mail input page title: %v", err)
+	}
+	p.log.Info("after google auth, %s", t)
 
 	if err := p.loginInput().Fill(id); err != nil {
 		return nil, fmt.Errorf("failed to fill login input: %v", err)
@@ -64,9 +76,12 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.idNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click ID next button: %v", err)
 	}
-	time.Sleep(25 * time.Second)
-	t2, _ := p.page.Title()
-	fmt.Printf("after email, %s", t2)
+	time.Sleep(10 * time.Second)
+	t2, err := p.page.Title()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pw input page title: %v", err)
+	}
+	p.log.Info("after email input, %s", t2)
 
 	if err := p.passwordInput().Fill(pw); err != nil {
 		return nil, fmt.Errorf("failed to fill password input: %v", err)
@@ -74,24 +89,32 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.passwordNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click password next button: %v", err)
 	}
-	time.Sleep(25 * time.Second)
-	t3, _ := p.page.Title()
-	fmt.Printf("after pw, %s", t3)
+	time.Sleep(15 * time.Second)
+	t3, err := p.page.Title()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get logined page title: %v", err)
+	}
+	p.log.Info("after pw input, %s", t3)
 
 	return p.page, nil
 }
 
 type monitoringPage struct {
 	page *agouti.Page
+	log  logger.Logger
 }
 
-func newMonitoringPage(p *agouti.Page) (*monitoringPage, error) {
+func newMonitoringPage(p *agouti.Page, l logger.Logger) (*monitoringPage, error) {
 	if err := p.Navigate(monitoringPageURL); err != nil {
 		return nil, err
 	}
-	time.Sleep(10 * time.Second)
-	t2, _ := p.Title()
-	fmt.Printf("after minitoring navigate, %s", t2)
+	time.Sleep(20 * time.Second)
+
+	t, err := p.Title()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get monitoring page title: %v", err)
+	}
+	l.Info("after navigation to monitoring page, title: %s", t)
 
 	return &monitoringPage{page: p}, nil
 }
@@ -162,11 +185,12 @@ func (p monitoringPage) download(rt ReportType) error {
 			return fmt.Errorf("failed to click one month button: %v", err)
 		}
 	}
+	p.log.Info("start downloading %s reports...", rt)
 
 	if err := p.maleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male 3 dots toggle button: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(4 * time.Second)
 	if err := p.malePNGDownloadButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male png download button: %v", err)
 	}
@@ -175,7 +199,7 @@ func (p monitoringPage) download(rt ReportType) error {
 	if err := p.femaleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click female 3 dots toggle button: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(4 * time.Second)
 	if err := p.femalePNGDownloadButton().Click(); err != nil {
 		return fmt.Errorf("failed to click female png download button: %v", err)
 	}
