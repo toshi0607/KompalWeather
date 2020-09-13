@@ -26,11 +26,11 @@ func newLoginPage(p *agouti.Page, l logger.Logger) (*loginPage, error) {
 
 	t, err := p.Title()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get login page title: %v", err)
+		return nil, fmt.Errorf("failed to get login page, title: %v", err)
 	}
 	l.Info("after navigation to SO login page, title: %s", t)
 
-	return &loginPage{page: p}, nil
+	return &loginPage{page: p, log: l}, nil
 }
 
 //
@@ -66,9 +66,9 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	time.Sleep(15 * time.Second)
 	t, err := p.page.Title()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get mail input page title: %v", err)
+		return nil, fmt.Errorf("failed to get mail input page, title: %v", err)
 	}
-	p.log.Info("after google auth, %s", t)
+	p.log.Info("after google auth page, title: %s", t)
 
 	if err := p.loginInput().Fill(id); err != nil {
 		return nil, fmt.Errorf("failed to fill login input: %v", err)
@@ -79,9 +79,9 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	time.Sleep(10 * time.Second)
 	t2, err := p.page.Title()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get pw input page title: %v", err)
+		return nil, fmt.Errorf("failed to get pw input page, title: %v", err)
 	}
-	p.log.Info("after email input, %s", t2)
+	p.log.Info("after email input page, title: %s", t2)
 
 	if err := p.passwordInput().Fill(pw); err != nil {
 		return nil, fmt.Errorf("failed to fill password input: %v", err)
@@ -92,9 +92,9 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	time.Sleep(15 * time.Second)
 	t3, err := p.page.Title()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get logined page title: %v", err)
+		return nil, fmt.Errorf("failed to get logined page, title: %v", err)
 	}
-	p.log.Info("after pw input, %s", t3)
+	p.log.Info("after pw input page, title: %s", t3)
 
 	return p.page, nil
 }
@@ -116,7 +116,7 @@ func newMonitoringPage(p *agouti.Page, l logger.Logger) (*monitoringPage, error)
 	}
 	l.Info("after navigation to monitoring page, title: %s", t)
 
-	return &monitoringPage{page: p}, nil
+	return &monitoringPage{page: p, log: l}, nil
 }
 
 //

@@ -133,7 +133,7 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 		return nil, fmt.Errorf("failed to download files: %v", err)
 	}
 
-	files := make([]string, 2)
+	var files []string
 	if !hasMale {
 		file, err := v.uploadFiles(ctx, localPath, maleFileName, rt)
 		if err != nil {
