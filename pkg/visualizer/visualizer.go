@@ -102,6 +102,15 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to open monitoring page: %v", err)
 	}
+	// test
+	if err := mp.page.FindByID("Email").Fill(v.config.Mail); err != nil {
+		return "", fmt.Errorf("failed to fill login input: %v", err)
+	}
+	if err := mp.page.FindByID("next").Click(); err != nil {
+		return "", fmt.Errorf("failed to click ID next button: %v", err)
+	}
+	time.Sleep(30 * time.Second)
+	// test
 	if err := mp.download(rt); err != nil {
 		return "", fmt.Errorf("failed to download files: %v", err)
 	}
