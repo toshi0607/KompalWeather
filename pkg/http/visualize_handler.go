@@ -14,6 +14,10 @@ type RequestBody struct {
 	ReportType visualizer.ReportType `json:"ReportType"`
 }
 
+type ResponseBody struct {
+	Files []string `json:"files,omitempty"`
+}
+
 // This application is intended to be hosted by Cloud Run which doesn't allow unauthenticated.
 // Called from Cloud Scheduler. Service account OIDC token with roles/run.invoker is required.
 func (s *VisualizeServer) visualizeHandler() http.Handler {
@@ -38,7 +42,7 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 		s.log.SetHandlerName(visualizerHandlerName)
 		s.log.Info("%s started", visualizerHandlerName)
 
-		result, err := s.visualizer.Save(ctx, req.ReportType)
+		files, err := s.visualizer.Save(ctx, req.ReportType)
 		if err != nil {
 			s.log.Error("failed to save", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -46,10 +50,11 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(result); err != nil {
+		if err := json.NewEncoder(w).Encode(ResponseBody{Files: files}); err != nil {
 			s.log.Error("failed to encode", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(http.StatusOK)
 	})
 }
