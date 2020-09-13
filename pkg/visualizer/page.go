@@ -55,6 +55,8 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 		return nil, fmt.Errorf("failed to click google OAuth button: %v", err)
 	}
 	time.Sleep(30 * time.Second)
+	t, _ := p.page.Title()
+	fmt.Errorf("after google auth, %s", t)
 
 	if err := p.loginInput().Fill(id); err != nil {
 		return nil, fmt.Errorf("failed to fill login input: %v", err)
@@ -63,6 +65,9 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 		return nil, fmt.Errorf("failed to click ID next button: %v", err)
 	}
 	time.Sleep(30 * time.Second)
+	t2, _ := p.page.Title()
+	fmt.Errorf("after email, %s", t2)
+
 	if err := p.passwordInput().Fill(pw); err != nil {
 		return nil, fmt.Errorf("failed to fill password input: %v", err)
 	}
@@ -70,6 +75,8 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 		return nil, fmt.Errorf("failed to click password next button: %v", err)
 	}
 	time.Sleep(30 * time.Second)
+	t3, _ := p.page.Title()
+	fmt.Errorf("after pw, %s", t3)
 
 	return p.page, nil
 }
@@ -83,6 +90,9 @@ func newMonitoringPage(p *agouti.Page) (*monitoringPage, error) {
 		return nil, err
 	}
 	time.Sleep(10 * time.Second)
+	t2, _ := p.Title()
+	fmt.Errorf("after minitoring navigate, %s", t2)
+
 	return &monitoringPage{page: p}, nil
 }
 
