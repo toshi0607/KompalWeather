@@ -32,19 +32,19 @@ func (p loginPage) googleOAuthButton() *agouti.Selection {
 }
 
 func (p loginPage) loginInput() *agouti.Selection {
-	return p.page.FindByID("identifierId")
+	return p.page.FindByID("Email")
 }
 
 func (p loginPage) idNextButton() *agouti.Selection {
-	return p.page.FindByID("identifierNext")
+	return p.page.FindByID("next")
 }
 
 func (p loginPage) passwordInput() *agouti.Selection {
-	return p.page.FindByID("password").FindByName("password")
+	return p.page.FindByID("password")
 }
 
 func (p loginPage) passwordNextButton() *agouti.Selection {
-	return p.page.FindByID("passwordNext")
+	return p.page.FindByID("submit")
 }
 
 //
@@ -54,7 +54,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.googleOAuthButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click google OAuth button: %v", err)
 	}
-	time.Sleep(20 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	if err := p.loginInput().Fill(id); err != nil {
 		return nil, fmt.Errorf("failed to fill login input: %v", err)
@@ -62,14 +62,14 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.idNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click ID next button: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(10 * time.Second)
 	if err := p.passwordInput().Fill(pw); err != nil {
 		return nil, fmt.Errorf("failed to fill password input: %v", err)
 	}
 	if err := p.passwordNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click password next button: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	return p.page, nil
 }
@@ -132,11 +132,11 @@ func (p monitoringPage) download(rt ReportType) error {
 	if err := p.settingToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click setting toggle button: %v", err)
 	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(5 * time.Second)
 	if err := p.oneColumnButton().Click(); err != nil {
 		return fmt.Errorf("failed to click one column button: %v", err)
 	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	switch rt {
 	case DailyReport:
@@ -156,20 +156,20 @@ func (p monitoringPage) download(rt ReportType) error {
 	if err := p.maleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male 3 dots toggle button: %v", err)
 	}
-	time.Sleep(1 * time.Second)
+	time.Sleep(5 * time.Second)
 	if err := p.malePNGDownloadButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male png download button: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(7 * time.Second)
 
 	if err := p.femaleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click female 3 dots toggle button: %v", err)
 	}
-	time.Sleep(1 * time.Second)
+	time.Sleep(5 * time.Second)
 	if err := p.femalePNGDownloadButton().Click(); err != nil {
 		return fmt.Errorf("failed to click female png download button: %v", err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(7 * time.Second)
 
 	return nil
 }

@@ -34,3 +34,19 @@ watch:
 v:
 	curl -sS http://localhost:8080/visualize -X POST \
 	  --data '{"reportType": "daily"}'
+
+.PHONY: dr
+dr:
+	docker run -p 127.0.0.1:8080:8080/tcp --rm --mount type=bind,source=$(shell pwd),target=/app --env-file .env --name vis5 visualizer:0.1
+
+.PHONY: db
+db:
+	docker build -f ./Dockerfile.visualizer -t visualizer:0.1 .
+
+.PHONY: de
+de:
+	docker exec -it vis5 bash
+
+.PHONY: dc
+dc:
+	docker cp vis5:/tmp/. ./tmp/

@@ -64,16 +64,24 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to open new page: %v", err)
 	}
+	defer func() {
+		v.log.Info("take screenshot")
+		if err := page.Screenshot(fmt.Sprintf("%s/last-page.png", localPath)); err != nil {
+			v.log.Error("failed to take screenshot, error:", err)
+		}
+		html, err := page.HTML()
+		if err != nil {
+			v.log.Error("failed to get HTML string, error:", err)
+		}
+		hb := []byte(html)
+		if err := ioutil.WriteFile(fmt.Sprintf("%s/last-page.png", localPath), hb, 0644); err != nil {
+			v.log.Error("failed to save HTML, error:", err)
+		}
+	}()
 
 	lp, err := newLoginPage(page)
 	if err != nil {
 		return "", fmt.Errorf("failed to open login page: %v", err)
-	}
-	if err := lp.page.Screenshot("tmp/after-google.png"); err != nil {
-		v.log.Error("failed to take screenshot", err)
-	}
-	if err := v.uploadFiles(ctx, "tmp", "after-google.png", rt); err != nil {
-		v.log.Error("failed to upload screenshot", err)
 	}
 
 	loggedIn, err := lp.login(v.config.Mail, v.config.PW)
@@ -133,6 +141,7 @@ func (v Visualizer) initDriver(localPath string) (*agouti.WebDriver, error) {
 			"--window-size=1280,800", // Size of window
 			"--no-sandbox",           // Sandbox requires namespace permissions that we don't have on a container
 			"--disable-gpu",          // There is no GPU on our Ubuntu box
+			"--lang=ja",
 		}),
 		agouti.Debug,
 	)
