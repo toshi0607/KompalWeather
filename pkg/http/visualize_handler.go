@@ -55,6 +55,5 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
 	})
 }

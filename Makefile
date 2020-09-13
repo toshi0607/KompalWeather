@@ -32,7 +32,7 @@ watch:
 
 .PHONY: v
 v:
-	curl -sS http://localhost:8080/visualize -X POST \
+	curl -sSi http://localhost:8080/visualize -X POST \
 	  --data '{"reportType": "daily"}'
 
 .PHONY: dr
