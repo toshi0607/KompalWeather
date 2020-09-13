@@ -69,7 +69,7 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 		return nil, fmt.Errorf("failed to open new page: %v", err)
 	}
 	defer func() {
-		v.log.Info("take screenshot")
+		v.log.Info("collecting logs...")
 		if err := page.Screenshot(fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName)); err != nil {
 			v.log.Error("failed to take screenshot, error:", err)
 		}
@@ -229,12 +229,13 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 
 // objectPath returns full path for GCS
 // Example:
-//   daily:   2020-09-09-2020-09-09-male.png
-//   weekly:  2020-12-28-2021-01-03-female.png
-//   monthly: 2020-12-01-2020-12-31-male.png
+//   daily:   daily/2020-09-09-2020-09-09-male.png
+//   weekly:  weekly/2020-12-28-2021-01-03-female.png
+//   monthly: monthly/2020-12-01-2020-12-31-male.png
+//   logs:    logs/1599983507/last-page.png
 func (v Visualizer) objectPath(fileName string, rt ReportType) (string, error) {
 	if rt == "" {
-		return fmt.Sprintf("%v/%s", time.Now().Unix(), fileName), nil
+		return fmt.Sprintf("logs/%v/%s", time.Now().Unix(), fileName), nil
 	}
 	var gender string
 	if fileName == maleFileName {
