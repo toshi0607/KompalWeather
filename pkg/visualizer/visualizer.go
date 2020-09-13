@@ -202,7 +202,7 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 //   monthly: 2020-12-01-2020-12-31-male.png
 func (v Visualizer) objectPath(fileName string, rt ReportType) (string, error) {
 	if rt == "" {
-		return fileName, nil
+		return fmt.Sprintf("%v/%s", time.Now().Unix(), fileName), nil
 	}
 	var gender string
 	if fileName == maleFileName {
