@@ -21,8 +21,10 @@ type Visualizer struct {
 }
 
 const (
-	maleFileName   = "男湯サウナ.png"
-	femaleFileName = "女湯サウナ.png"
+	maleFileName         = "男湯サウナ.png"
+	femaleFileName       = "女湯サウナ.png"
+	lastPagePNGFileName  = "last-page.png"
+	lastPageHTMLFileName = "last-page.html"
 )
 
 func New(c *config.VisualizerConfig, g *gcs.GCS, l logger.Logger) (*Visualizer, error) {
@@ -66,7 +68,7 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	}
 	defer func() {
 		v.log.Info("take screenshot")
-		if err := page.Screenshot(fmt.Sprintf("%s/last-page.png", localPath)); err != nil {
+		if err := page.Screenshot(fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName)); err != nil {
 			v.log.Error("failed to take screenshot, error:", err)
 		}
 		html, err := page.HTML()
@@ -74,8 +76,15 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 			v.log.Error("failed to get HTML string, error:", err)
 		}
 		hb := []byte(html)
-		if err := ioutil.WriteFile(fmt.Sprintf("%s/last-page.png", localPath), hb, 0644); err != nil {
+		if err := ioutil.WriteFile(fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName), hb, 0644); err != nil {
 			v.log.Error("failed to save HTML, error:", err)
+		}
+
+		if err := v.uploadFiles(ctx, localPath, lastPagePNGFileName, ""); err != nil {
+			v.log.Error("failed to upload PNG, error:", err)
+		}
+		if err := v.uploadFiles(ctx, localPath, lastPageHTMLFileName, ""); err != nil {
+			v.log.Error("failed to upload HTML, error:", err)
 		}
 	}()
 
@@ -192,6 +201,9 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 //   weekly:  2020-12-28-2021-01-03-female.png
 //   monthly: 2020-12-01-2020-12-31-male.png
 func (v Visualizer) objectPath(fileName string, rt ReportType) (string, error) {
+	if rt == "" {
+		return fileName, nil
+	}
 	var gender string
 	if fileName == maleFileName {
 		gender = "male"

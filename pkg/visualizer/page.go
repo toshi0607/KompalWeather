@@ -69,7 +69,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.passwordNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click password next button: %v", err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	return p.page, nil
 }
