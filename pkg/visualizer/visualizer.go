@@ -109,11 +109,16 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) (string, error) {
 	if err := mp.page.FindByID("next").Click(); err != nil {
 		return "", fmt.Errorf("failed to click ID next button: %v", err)
 	}
-	time.Sleep(30 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	if err := mp.page.FindByID("password").Fill(v.config.PW); err != nil {
 		return "", fmt.Errorf("failed to fill pw input: %v", err)
 	}
+	if err := mp.page.FindByID("submit").Click(); err != nil {
+		return "", fmt.Errorf("failed to click pw submit button: %v", err)
+	}
+	time.Sleep(15 * time.Second)
+
 	if err := mp.page.FindByID("submit").Click(); err != nil {
 		return "", fmt.Errorf("failed to click pw submit button: %v", err)
 	}

@@ -54,7 +54,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.googleOAuthButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click google OAuth button: %v", err)
 	}
-	time.Sleep(30 * time.Second)
+	time.Sleep(25 * time.Second)
 	t, _ := p.page.Title()
 	fmt.Printf("after google auth, %s", t)
 
@@ -64,7 +64,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.idNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click ID next button: %v", err)
 	}
-	time.Sleep(30 * time.Second)
+	time.Sleep(25 * time.Second)
 	t2, _ := p.page.Title()
 	fmt.Printf("after email, %s", t2)
 
@@ -74,7 +74,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.passwordNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click password next button: %v", err)
 	}
-	time.Sleep(30 * time.Second)
+	time.Sleep(25 * time.Second)
 	t3, _ := p.page.Title()
 	fmt.Printf("after pw, %s", t3)
 
