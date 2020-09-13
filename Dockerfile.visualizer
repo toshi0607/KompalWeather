@@ -12,12 +12,21 @@ RUN CGO_ENABLED=0 GOOS=linux go install -v ./cmd/server/visualizer
 
 FROM debian:buster-slim
 
-RUN apt-get update -y
+RUN apt-get update
+RUN apt-get -y install wget --fix-missing
+RUN apt-get -y install xvfb --fix-missing
+RUN apt-get -y install unzip --fix-missing
+
+RUN apt-get -y install dbus --fix-missing
+RUN apt-get -y install dbus-x11 --fix-missing
+
 RUN apt-get install -y chromium
 
 RUN apt-get install -yqq unzip wget curl
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+RUN wget -N -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+RUN unzip /tmp/chromedriver.zip
+RUN chmod +x chromedriver
+RUN mv -f chromedriver /usr/local/bin/chromedriver
 
 COPY --from=0 /go/bin/visualizer /bin/visualizer
 
