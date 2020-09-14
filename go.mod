@@ -14,7 +14,7 @@ require (
 	github.com/dustin/gojson v0.0.0-20160307161227-2e71ec9dd5ad // indirect
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17 // indirect
 	github.com/golang/protobuf v1.4.2
-	github.com/golangci/golangci-lint v1.30.0
+	github.com/golangci/golangci-lint v1.31.0
 	github.com/google/go-cmp v0.5.2
 	github.com/google/go-metrics-stackdriver v0.2.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.2.0 // indirect
@@ -27,6 +27,5 @@ require (
 	golang.org/x/sys v0.0.0-20200831180312-196b9ba8737a // indirect
 	google.golang.org/api v0.31.0 // indirect
 	google.golang.org/genproto v0.0.0-20200901141002-b3bf27a9dbd1
-	google.golang.org/grpc v1.31.1 // indirect
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20191122095212-08231195c43b
 )
