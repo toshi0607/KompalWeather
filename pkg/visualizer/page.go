@@ -146,9 +146,9 @@ func (p monitoringPage) femalePNGDownloadButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-4\"]/div/div/button[4]")
 }
 
-func (p monitoringPage) oneDayButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[3]")
-}
+//func (p monitoringPage) oneDayButton() *agouti.Selection {
+//	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[3]")
+//}
 
 func (p monitoringPage) oneWeekButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[4]")
