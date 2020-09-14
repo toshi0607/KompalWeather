@@ -25,7 +25,7 @@ func (rt ReportType) IsValid() bool {
 func (rt ReportType) reportPeriod() (pt.Period, error) {
 	switch rt {
 	case DailyReport:
-		return pt.YesterdayPeriod(pt.NowJST()), nil
+		return pt.TodayPeriod(pt.NowJST()), nil
 	case WeeklyReport:
 		return pt.WeeklyPeriod(pt.NowJST()), nil
 	case MonthlyReport:

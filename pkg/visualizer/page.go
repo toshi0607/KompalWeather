@@ -146,9 +146,9 @@ func (p monitoringPage) femalePNGDownloadButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-4\"]/div/div/button[4]")
 }
 
-func (p monitoringPage) oneDayButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[3]")
-}
+//func (p monitoringPage) oneDayButton() *agouti.Selection {
+//	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[3]")
+//}
 
 func (p monitoringPage) oneWeekButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/div[2]/button[4]")
@@ -173,9 +173,7 @@ func (p monitoringPage) download(rt ReportType) error {
 
 	switch rt {
 	case DailyReport:
-		if err := p.oneDayButton().Click(); err != nil {
-			return fmt.Errorf("failed to click one day button: %v", err)
-		}
+		p.log.Info("skip time select button because 6H is default")
 	case WeeklyReport:
 		if err := p.oneWeekButton().Click(); err != nil {
 			return fmt.Errorf("failed to click one week button: %v", err)
