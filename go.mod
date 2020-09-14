@@ -5,7 +5,7 @@ go 1.14
 require (
 	cloud.google.com/go v0.65.0
 	cloud.google.com/go/logging v1.1.0
-	cloud.google.com/go/storage v1.10.0
+	cloud.google.com/go/storage v1.11.0
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
 	github.com/armon/go-metrics v0.3.4 // indirect
