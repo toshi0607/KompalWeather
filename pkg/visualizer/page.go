@@ -173,9 +173,7 @@ func (p monitoringPage) download(rt ReportType) error {
 
 	switch rt {
 	case DailyReport:
-		if err := p.oneDayButton().Click(); err != nil {
-			return fmt.Errorf("failed to click one day button: %v", err)
-		}
+		p.log.Info("skip time select button because 6H is default")
 	case WeeklyReport:
 		if err := p.oneWeekButton().Click(); err != nil {
 			return fmt.Errorf("failed to click one week button: %v", err)

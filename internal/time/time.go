@@ -44,6 +44,14 @@ func (p Period) String() string {
 	return fmt.Sprintf("%s-%s", p.Start.Format(format), prevDate.Format(format))
 }
 
+func TodayPeriod(now time.Time) Period {
+	tomorrow := now.AddDate(0, 0, 1)
+	return Period{
+		Start: date(now.Year(), now.Month(), now.Day()),
+		End:   date(tomorrow.Year(), tomorrow.Month(), tomorrow.Day()),
+	}
+}
+
 func YesterdayPeriod(now time.Time) Period {
 	yesterday := now.AddDate(0, 0, -1)
 	return Period{
