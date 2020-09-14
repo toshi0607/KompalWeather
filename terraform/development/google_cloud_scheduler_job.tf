@@ -78,7 +78,7 @@ resource "google_cloud_scheduler_job" "daily_visualizer_dev" {
   name             = "daily-visualizer-dev"
   project          = var.gcp_project
   region           = var.gcp_region
-  schedule         = "10 0 * * sun-tue,thu-sat"
+  schedule         = "30 23 * * sun,mon,wed-sat"
   time_zone        = local.time_zone_tokyo
 
   retry_config {
@@ -106,7 +106,7 @@ resource "google_cloud_scheduler_job" "weekly_visualizer_dev" {
   name             = "weekly-visualizer-dev"
   project          = var.gcp_project
   region           = var.gcp_region
-  schedule         = "15 0 * * mon"
+  schedule         = "30 0 * * tue"
   time_zone        = local.time_zone_tokyo
 
   retry_config {
