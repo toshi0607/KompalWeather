@@ -74,6 +74,10 @@ resource "google_cloud_run_service" "kompal-weather-dev" {
           name  = "ENVIRONMENT"
           value = "development"
         }
+        env {
+          name  = "GCS_BUCKET_NAME"
+          value = google_storage_bucket.kompal_weather_report_dev.name
+        }
         resources {
           limits = {
             cpu    = "1000m"

@@ -52,6 +52,14 @@ func TodayPeriod(now time.Time) Period {
 	}
 }
 
+func WeekAgoPeriod(now time.Time) Period {
+	aWeekAgo := now.AddDate(0, 0, -7)
+	return Period{
+		Start: date(aWeekAgo.Year(), aWeekAgo.Month(), aWeekAgo.Day()),
+		End:   date(aWeekAgo.Year(), aWeekAgo.Month(), aWeekAgo.Day()+1),
+	}
+}
+
 func YesterdayPeriod(now time.Time) Period {
 	yesterday := now.AddDate(0, 0, -1)
 	return Period{

@@ -19,6 +19,7 @@ type CoreConfig struct {
 	Kompal  *kompal.Config
 	Sheets  *storage.SheetsConfig
 	// Common config
+	BucketName   string
 	ServerPort   int
 	GCPProjectID string
 	Version      string
@@ -29,6 +30,7 @@ type CoreConfig struct {
 }
 
 type coreEnv struct {
+	BucketName string `envconfig:"GCS_BUCKET_NAME" required:"true"`
 	// GCPProjectID is a GCP project id where this application is hosted
 	GCPProjectID string `envconfig:"GCP_PROJECT_ID" required:"true"`
 	// ServerPort is a port number this application listens to
@@ -136,6 +138,7 @@ func (c *CoreConfig) Init() error {
 		APIKey:            apiKey,
 		APIKeySecret:      apiKeySecret,
 	}
+	c.BucketName = e.BucketName
 	c.GCPProjectID = e.GCPProjectID
 	c.ServerPort = e.ServerPort
 	c.ServiceName = e.ServiceName

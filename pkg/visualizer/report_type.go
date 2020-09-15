@@ -12,6 +12,7 @@ const (
 	DailyReport   = ReportType("daily")
 	WeeklyReport  = ReportType("weekly")
 	MonthlyReport = ReportType("monthly")
+	WeekAgoReport = ReportType("weekAgo")
 )
 
 func (rt ReportType) String() string {
@@ -19,7 +20,7 @@ func (rt ReportType) String() string {
 }
 
 func (rt ReportType) IsValid() bool {
-	return rt == DailyReport || rt == WeeklyReport || rt == MonthlyReport
+	return rt == DailyReport || rt == WeeklyReport || rt == MonthlyReport || rt == WeekAgoReport
 }
 
 func (rt ReportType) reportPeriod() (pt.Period, error) {
@@ -30,6 +31,8 @@ func (rt ReportType) reportPeriod() (pt.Period, error) {
 		return pt.WeeklyPeriod(pt.NowJST()), nil
 	case MonthlyReport:
 		return pt.MonthlyPeriod(pt.NowJST()), nil
+	case WeekAgoReport:
+		return pt.WeekAgoPeriod(pt.NowJST()), nil
 	default:
 		return pt.Period{}, errors.New("unknown report type")
 	}
