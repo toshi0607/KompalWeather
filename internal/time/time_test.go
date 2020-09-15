@@ -50,6 +50,14 @@ func TestTodayPeriod(t *testing.T) {
 	}
 }
 
+func TestWeekAgoPeriod(t *testing.T) {
+	got := WeekAgoPeriod(testDate(2020, 9, 7)).String()
+	want := "2020-08-31-2020-08-31"
+	if got != want {
+		t.Errorf("got: %s, want: %s", got, want)
+	}
+}
+
 func TestYesterdayPeriod(t *testing.T) {
 	got := YesterdayPeriod(testDate(2020, 9, 7)).String()
 	want := "2020-09-06-2020-09-06"

@@ -18,6 +18,7 @@ func TestReportType_String(t *testing.T) {
 		"valid daily":   {rt: DailyReport, want: "daily"},
 		"valid weekly":  {rt: WeeklyReport, want: "weekly"},
 		"valid monthly": {rt: MonthlyReport, want: "monthly"},
+		"valid weekAgo": {rt: WeekAgoReport, want: "weekAgo"},
 		"invalid":       {rt: ReportType("invalid type"), want: "invalid type"},
 	}
 
@@ -39,6 +40,7 @@ func TestReportType_IsValid(t *testing.T) {
 		"valid daily":   {rt: DailyReport, want: true},
 		"valid weekly":  {rt: WeeklyReport, want: true},
 		"valid monthly": {rt: MonthlyReport, want: true},
+		"valid weekAgo": {rt: WeekAgoReport, want: true},
 		"invalid":       {rt: ReportType("invalid type"), want: false},
 	}
 

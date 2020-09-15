@@ -12,6 +12,7 @@ import (
 	"github.com/toshi0607/kompal-weather/internal/config"
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
 	"github.com/toshi0607/kompal-weather/pkg/controller"
+	"github.com/toshi0607/kompal-weather/pkg/gcs"
 	"github.com/toshi0607/kompal-weather/pkg/http"
 	"github.com/toshi0607/kompal-weather/pkg/kompal"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
@@ -89,6 +90,13 @@ func realMain(_ []string) int {
 		return exitError
 	}
 
+	// Init GCS
+	g, err := gcs.New(c.BucketName)
+	if err != nil {
+		log.Printf("failed to create new gcs: %v", err)
+		return exitError
+	}
+
 	// Init notifiers
 	// Init twitter
 	tw := twitter.New(c.Twitter, l)
@@ -112,7 +120,7 @@ func realMain(_ []string) int {
 	}()
 
 	// CoreServer start
-	server := http.NewCore(controller.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, l), l)
+	server := http.NewCore(controller.New(k, sheets, []notifier.Notifier{sl, tw}, an, m, g, l), l)
 
 	httpLn, err := net.Listen("tcp", fmt.Sprintf(":%d", c.ServerPort))
 	if err != nil {

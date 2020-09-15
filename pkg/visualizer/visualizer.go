@@ -22,8 +22,8 @@ type Visualizer struct {
 }
 
 const (
-	maleFileName         = "男湯サウナ.png"
-	femaleFileName       = "女湯サウナ.png"
+	MaleFileName         = "男湯サウナ.png"
+	FemaleFileName       = "女湯サウナ.png"
 	lastPagePNGFileName  = "last-page.png"
 	lastPageHTMLFileName = "last-page.html"
 )
@@ -135,14 +135,14 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 
 	var files []string
 	if !hasMale {
-		file, err := v.uploadFiles(ctx, localPath, maleFileName, rt)
+		file, err := v.uploadFiles(ctx, localPath, MaleFileName, rt)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update male file: %v", err)
 		}
 		files = append(files, file)
 	}
 	if !hasFemale {
-		file, err := v.uploadFiles(ctx, localPath, femaleFileName, rt)
+		file, err := v.uploadFiles(ctx, localPath, FemaleFileName, rt)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update female file: %v", err)
 		}
@@ -153,7 +153,7 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 }
 
 func (v Visualizer) hasFile(ctx context.Context, rt ReportType) (bool, bool, error) {
-	malePath, err := v.objectPath(maleFileName, rt)
+	malePath, err := ObjectPath(MaleFileName, rt)
 	if err != nil {
 		return false, false, fmt.Errorf("failed to build male object path: %v", err)
 	}
@@ -161,7 +161,7 @@ func (v Visualizer) hasFile(ctx context.Context, rt ReportType) (bool, bool, err
 	if err != nil {
 		return false, false, fmt.Errorf("failed to check male object: %v", err)
 	}
-	femalePath, err := v.objectPath(femaleFileName, rt)
+	femalePath, err := ObjectPath(FemaleFileName, rt)
 	if err != nil {
 		return false, false, fmt.Errorf("failed to build female object path: %v", err)
 	}
@@ -215,7 +215,7 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 		return "", fmt.Errorf("failed to read local file to buffer: %v", err)
 	}
 
-	op, err := v.objectPath(fileName, rt)
+	op, err := ObjectPath(fileName, rt)
 	if err != nil {
 		return "", fmt.Errorf("failed to build object path: %v", err)
 	}
@@ -227,18 +227,18 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 	return op, nil
 }
 
-// objectPath returns full path for GCS
+// ObjectPath returns full path for GCS
 // Example:
 //   daily:   daily/2020-09-09-2020-09-09-male.png
 //   weekly:  weekly/2020-12-28-2021-01-03-female.png
 //   monthly: monthly/2020-12-01-2020-12-31-male.png
 //   logs:    logs/1599983507/last-page.png
-func (v Visualizer) objectPath(fileName string, rt ReportType) (string, error) {
+func ObjectPath(fileName string, rt ReportType) (string, error) {
 	if rt == "" {
 		return fmt.Sprintf("logs/%v/%s", time.Now().Unix(), fileName), nil
 	}
 	var gender string
-	if fileName == maleFileName {
+	if fileName == MaleFileName {
 		gender = "male"
 	} else {
 		gender = "female"
@@ -247,6 +247,9 @@ func (v Visualizer) objectPath(fileName string, rt ReportType) (string, error) {
 	periodStr, err := rt.reportPeriod()
 	if err != nil {
 		return "", err
+	}
+	if rt == WeekAgoReport {
+		rt = DailyReport
 	}
 	return fmt.Sprintf("%s/%s-%s.png", rt, periodStr, gender), nil
 }

@@ -55,4 +55,5 @@ func (s *CoreServer) GracefulStop(ctx context.Context) error {
 
 func (s *CoreServer) registerHandlers() {
 	s.mux.Handle("/watch", s.watchHandler())
+	s.mux.Handle("/trend", s.trendHandler())
 }

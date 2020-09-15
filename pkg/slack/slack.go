@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/toshi0607/kompal-weather/pkg/analyzer"
@@ -65,9 +64,14 @@ func (s Slack) Notify(ctx context.Context, result *analyzer.Result) error {
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Printf("failed to close resp body: %s", err)
+			s.log.Error("failed to close resp body: %s", err)
 		}
 	}()
 
+	return nil
+}
+
+func (s Slack) NotifyWithMedium(ctx context.Context, msg string, contents [][]byte) error {
+	s.log.Info("skip slack notification")
 	return nil
 }

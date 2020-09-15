@@ -30,6 +30,11 @@ lint:
 watch:
 	curl -sS http://localhost:8080/watch -X POST
 
+.PHONY: trend
+trend:
+	curl -sSi http://localhost:8080/trend -X POST \
+	  --data '{"reportType": "weekAgo"}'
+
 .PHONY: v
 v:
 	curl -sSi http://localhost:8080/visualize -X POST \

@@ -9,10 +9,10 @@ import (
 )
 
 type VisualizerConfig struct {
-	Mail       string
-	PW         string
-	BucketName string
+	Mail string
+	PW   string
 	// Common config
+	BucketName   string
 	ServerPort   int
 	GCPProjectID string
 	Version      string
