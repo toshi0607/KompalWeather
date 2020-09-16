@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/toshi0607/kompal-weather/pkg/visualizer"
+	"github.com/toshi0607/kompal-weather/pkg/report"
 )
 
 const trendHandlerName = "trendHandler"
@@ -24,8 +24,8 @@ func (s *CoreServer) trendHandler() http.Handler {
 			http.Error(w, "failed to read body", http.StatusBadRequest)
 			return
 		}
-		if req.ReportType != visualizer.WeekAgoReport {
-			err := fmt.Errorf("invalid report type: %v", req.ReportType)
+		if req.ReportKind != report.WeekAgoReport {
+			err := fmt.Errorf("invalid report type: %v", req.ReportKind)
 			s.log.Info(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
@@ -34,7 +34,7 @@ func (s *CoreServer) trendHandler() http.Handler {
 		s.log.SetHandlerName(trendHandlerName)
 		s.log.Info("%s started", trendHandlerName)
 
-		if err := s.controller.Trend(ctx, req.ReportType); err != nil {
+		if err := s.controller.Trend(ctx, req.ReportKind); err != nil {
 			s.log.Error("failed to trend", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return

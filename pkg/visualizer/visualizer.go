@@ -12,6 +12,8 @@ import (
 	"github.com/toshi0607/kompal-weather/internal/config"
 	"github.com/toshi0607/kompal-weather/pkg/gcs"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
+	"github.com/toshi0607/kompal-weather/pkg/path"
+	"github.com/toshi0607/kompal-weather/pkg/report"
 )
 
 // Visualizer represents visualizer
@@ -22,8 +24,8 @@ type Visualizer struct {
 }
 
 const (
-	MaleFileName         = "男湯サウナ.png"
-	FemaleFileName       = "女湯サウナ.png"
+	maleFileName         = "男湯サウナ.png"
+	femaleFileName       = "女湯サウナ.png"
 	lastPagePNGFileName  = "last-page.png"
 	lastPageHTMLFileName = "last-page.html"
 )
@@ -34,8 +36,8 @@ func New(c *config.VisualizerConfig, g *gcs.GCS, l logger.Logger) (*Visualizer, 
 }
 
 // Save saves male and female report files in GCS
-func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
-	hasMale, hasFemale, err := v.hasFile(ctx, rt)
+func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
+	hasMale, hasFemale, err := v.hasFile(ctx, k)
 	if err != nil {
 		return nil, fmt.Errorf("failed to check file existence: %v", err)
 	}
@@ -82,10 +84,12 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 			v.log.Error("failed to save HTML, error:", err)
 		}
 
-		if _, err := v.uploadFiles(ctx, localPath, lastPagePNGFileName, ""); err != nil {
+		if _, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName),
+			path.LogObjectPath(lastPagePNGFileName)); err != nil {
 			v.log.Error("failed to upload PNG, error:", err)
 		}
-		if _, err := v.uploadFiles(ctx, localPath, lastPageHTMLFileName, ""); err != nil {
+		if _, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName),
+			path.LogObjectPath(lastPageHTMLFileName)); err != nil {
 			v.log.Error("failed to upload HTML, error:", err)
 		}
 	}()
@@ -129,31 +133,39 @@ func (v Visualizer) Save(ctx context.Context, rt ReportType) ([]string, error) {
 	// It's necessary to choose the same number on my smartphone as shown in the screen on cloud...
 	// When this happens often, I need to implement slack notification with screenshot.
 
-	if err := mp.download(rt); err != nil {
+	if err := mp.download(k); err != nil {
 		return nil, fmt.Errorf("failed to download files: %v", err)
 	}
 
 	var files []string
 	if !hasMale {
-		file, err := v.uploadFiles(ctx, localPath, MaleFileName, rt)
+		target, err := path.ReportObjectPath("male", k)
+		if err != nil {
+			return nil, fmt.Errorf("failed to build male target path: %v", err)
+		}
+		filePath, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, maleFileName), target)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update male file: %v", err)
 		}
-		files = append(files, file)
+		files = append(files, filePath)
 	}
 	if !hasFemale {
-		file, err := v.uploadFiles(ctx, localPath, FemaleFileName, rt)
+		target, err := path.ReportObjectPath("female", k)
 		if err != nil {
-			return nil, fmt.Errorf("failed to update female file: %v", err)
+			return nil, fmt.Errorf("failed to build female target path: %v", err)
 		}
-		files = append(files, file)
+		filePath, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, femaleFileName), target)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update male file: %v", err)
+		}
+		files = append(files, filePath)
 	}
 
 	return files, nil
 }
 
-func (v Visualizer) hasFile(ctx context.Context, rt ReportType) (bool, bool, error) {
-	malePath, err := ObjectPath(MaleFileName, rt)
+func (v Visualizer) hasFile(ctx context.Context, k report.Kind) (bool, bool, error) {
+	malePath, err := path.ReportObjectPath("male", k)
 	if err != nil {
 		return false, false, fmt.Errorf("failed to build male object path: %v", err)
 	}
@@ -161,7 +173,7 @@ func (v Visualizer) hasFile(ctx context.Context, rt ReportType) (bool, bool, err
 	if err != nil {
 		return false, false, fmt.Errorf("failed to check male object: %v", err)
 	}
-	femalePath, err := ObjectPath(FemaleFileName, rt)
+	femalePath, err := path.ReportObjectPath("female", k)
 	if err != nil {
 		return false, false, fmt.Errorf("failed to build female object path: %v", err)
 	}
@@ -193,8 +205,8 @@ func (v Visualizer) initDriver(localPath string) (*agouti.WebDriver, error) {
 	return driver, nil
 }
 
-func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string, rt ReportType) (string, error) {
-	f, err := os.Open(localPath + "/" + fileName)
+func (v Visualizer) uploadFiles(ctx context.Context, source, target string) (string, error) {
+	f, err := os.Open(source)
 	if err != nil {
 		return "", fmt.Errorf("failed to open local file: %v", err)
 	}
@@ -215,41 +227,10 @@ func (v Visualizer) uploadFiles(ctx context.Context, localPath, fileName string,
 		return "", fmt.Errorf("failed to read local file to buffer: %v", err)
 	}
 
-	op, err := ObjectPath(fileName, rt)
-	if err != nil {
-		return "", fmt.Errorf("failed to build object path: %v", err)
-	}
-	if err := v.gcs.Put(ctx, b, op); err != nil {
+	if err := v.gcs.Put(ctx, b, target); err != nil {
 		return "", err
 	}
-	v.log.Info("file uploaded! bucket: %s, objectPath: %s", v.config.BucketName, op)
+	v.log.Info("file uploaded! bucket: %s, targetPath: %s", v.config.BucketName, target)
 
-	return op, nil
-}
-
-// ObjectPath returns full path for GCS
-// Example:
-//   daily:   daily/2020-09-09-2020-09-09-male.png
-//   weekly:  weekly/2020-12-28-2021-01-03-female.png
-//   monthly: monthly/2020-12-01-2020-12-31-male.png
-//   logs:    logs/1599983507/last-page.png
-func ObjectPath(fileName string, rt ReportType) (string, error) {
-	if rt == "" {
-		return fmt.Sprintf("logs/%v/%s", time.Now().Unix(), fileName), nil
-	}
-	var gender string
-	if fileName == MaleFileName {
-		gender = "male"
-	} else {
-		gender = "female"
-	}
-
-	periodStr, err := rt.reportPeriod()
-	if err != nil {
-		return "", err
-	}
-	if rt == WeekAgoReport {
-		rt = DailyReport
-	}
-	return fmt.Sprintf("%s/%s-%s.png", rt, periodStr, gender), nil
+	return target, nil
 }
