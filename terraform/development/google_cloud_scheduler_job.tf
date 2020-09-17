@@ -184,3 +184,31 @@ resource "google_cloud_scheduler_job" "week_ago_trend_dev" {
 
   depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]
 }
+
+resource "google_cloud_scheduler_job" "weekly_trend_dev" {
+  attempt_deadline = "600s"
+  name             = "weekly-trend-dev"
+  project          = var.gcp_project
+  region           = var.gcp_region
+  schedule         = "0 18 * * tue"
+  time_zone        = local.time_zone_tokyo
+
+  retry_config {
+    min_backoff_duration = "10s"
+    max_doublings        = 2
+    retry_count          = 3
+  }
+
+  http_target {
+    body        = base64encode("{\"reportType\":\"weekly\"}\n")
+    http_method = "POST"
+    uri         = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/trend"
+
+    oidc_token {
+      audience              = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/trend"
+      service_account_email = google_service_account.kompal_weather_invoker.email
+    }
+  }
+
+  depends_on = [google_project_iam_member.kompal_weather_invoker_dev_is_run_invoker]
+}
