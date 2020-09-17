@@ -13,24 +13,14 @@ RUN CGO_ENABLED=0 GOOS=linux go install -v ./cmd/server/visualizer
 FROM debian:buster-slim
 
 RUN apt-get update
-RUN apt-get -y install wget --fix-missing
-RUN apt-get -y install gnupg --fix-missing
-RUN apt-get -y install xvfb --fix-missing
-RUN apt-get -y install unzip --fix-missing
-RUN apt-get -y install fonts-ipafont --fix-missing
-RUN apt-get -y install fonts-ipaexfont --fix-missing
+RUN apt-get -y install wget curl gnupg xvfb unzip fonts-ipafont fonts-ipaexfont dbus dbus-x11 \
+    locales task-japanese tzdata --fix-missing && apt clean && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -y install dbus --fix-missing
-RUN apt-get -y install dbus-x11 --fix-missing
-
-RUN apt-get install -y locales task-japanese
 RUN locale-gen ja_JP.UTF-8
 RUN localedef -f UTF-8 -i ja_JP ja_JP
 ENV LANG ja_JP.UTF-8
 ENV LANGUAGE ja_JP:jp
 ENV LC_ALL ja_JP.UTF-8
-
-RUN apt update && apt install -y tzdata && apt clean && rm -rf /var/lib/apt/lists/*
 ENV TZ Asia/Tokyo
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -38,7 +28,6 @@ RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable 
 RUN apt-get update
 RUN apt-get -y install google-chrome-stable
 
-RUN apt-get install -yqq unzip wget curl
 RUN wget -N -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver.zip
 RUN rm /tmp/chromedriver.zip
