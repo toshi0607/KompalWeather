@@ -24,7 +24,7 @@ func (s *CoreServer) trendHandler() http.Handler {
 			http.Error(w, "failed to read body", http.StatusBadRequest)
 			return
 		}
-		if req.ReportKind != report.WeekAgoReport {
+		if req.ReportKind != report.WeekAgoReport && req.ReportKind != report.WeeklyReport {
 			err := fmt.Errorf("invalid report type: %v", req.ReportKind)
 			s.log.Info(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)

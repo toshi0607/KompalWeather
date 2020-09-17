@@ -33,6 +33,16 @@ func FemaleWeekAgoReportObject() string {
 	return p
 }
 
+func MaleWeeklyReportObject() string {
+	p, _ := ReportObject("male", report.WeeklyReport)
+	return p
+}
+
+func FemaleWeeklyReportObject() string {
+	p, _ := ReportObject("female", report.WeeklyReport)
+	return p
+}
+
 // LogObject returns full path for GCS
 //   logs:    logs/1599983507/last-page.png
 func LogObject(fileName string) string {

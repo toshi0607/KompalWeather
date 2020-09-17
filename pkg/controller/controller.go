@@ -78,22 +78,34 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 }
 
 func (c controller) Trend(ctx context.Context, k report.Kind) error {
+	var malePath, femalePath, msg string
+	switch k {
+	case report.WeekAgoReport:
+		malePath = path.MaleWeekAgoReportObject()
+		femalePath = path.FemaleWeekAgoReportObject()
+		msg = "先週の今日の混雑傾向です！"
+	case report.WeeklyReport:
+		malePath = path.MaleWeeklyReportObject()
+		femalePath = path.FemaleWeeklyReportObject()
+		msg = "直近1週間の混雑傾向です！"
+	default:
+		err := fmt.Errorf("unexpected report kind: %s", k)
+		c.log.Error("unexpected report kind", err)
+		return err
+	}
+
 	var images [][]byte
-	malePath := path.MaleWeekAgoReportObject()
 	mb, err := c.gcs.Get(ctx, path.MaleWeekAgoReportObject())
 	if err != nil {
 		return fmt.Errorf("failed to get image, path: %s, error: %v", malePath, err)
 	}
 	images = append(images, mb)
-
-	femalePath := path.FemaleWeekAgoReportObject()
 	fmb, err := c.gcs.Get(ctx, femalePath)
 	if err != nil {
 		return fmt.Errorf("failed to get image, path: %s, error: %v", femalePath, err)
 	}
 	images = append(images, fmb)
 
-	msg := "先週の今日の混雑具合です！"
 	for _, n := range c.notifiers {
 		n := n
 		if err := n.NotifyWithMedium(ctx, msg, images); err != nil {
