@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	format  = "2006-01-02"
-	now     = pt.NowJST().Format(format)
-	weekAgo = pt.NowJST().AddDate(0, 0, -7).Format(format)
-	aDayAgo = pt.NowJST().AddDate(0, 0, -1).Format(format)
+	format    = "2006-01-02"
+	now       = pt.NowJST().Format(format)
+	weekAgo   = pt.NowJST().AddDate(0, 0, -7).Format(format)
+	yesterday = pt.NowJST().AddDate(0, 0, -1).Format(format)
 )
 
 func TestReportObject(t *testing.T) {
@@ -65,7 +65,7 @@ func TestFemaleWeekAgoReportObject(t *testing.T) {
 }
 
 func TestMaleWeeklyReportObject(t *testing.T) {
-	want := fmt.Sprintf("weekly/%s-%s-male.png", weekAgo, aDayAgo)
+	want := fmt.Sprintf("weekly/%s-%s-male.png", weekAgo, yesterday)
 	got := MaleWeeklyReportObject()
 	if got != want {
 		t.Errorf("got: %s, want: %s", got, want)
@@ -73,7 +73,7 @@ func TestMaleWeeklyReportObject(t *testing.T) {
 }
 
 func TestFemaleWeeklyReportObject(t *testing.T) {
-	want := fmt.Sprintf("weekly/%s-%s-female.png", weekAgo, aDayAgo)
+	want := fmt.Sprintf("weekly/%s-%s-female.png", weekAgo, yesterday)
 	got := FemaleWeeklyReportObject()
 	if got != want {
 		t.Errorf("got: %s, want: %s", got, want)
