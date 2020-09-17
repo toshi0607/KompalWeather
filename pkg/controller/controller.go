@@ -79,24 +79,17 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 
 func (c controller) Trend(ctx context.Context, k report.Kind) error {
 	var images [][]byte
-	mop, err := path.ReportObjectPath("male", k)
-	c.log.Info("male object name %s", mop)
+	malePath := path.MaleWeekAgoReportObject()
+	mb, err := c.gcs.Get(ctx, path.MaleWeekAgoReportObject())
 	if err != nil {
-		return fmt.Errorf("failed to get male object path: %v", err)
-	}
-	mb, err := c.gcs.Get(ctx, mop)
-	if err != nil {
-		return fmt.Errorf("failed to get image: %v", err)
+		return fmt.Errorf("failed to get image, path: %s, error: %v", malePath, err)
 	}
 	images = append(images, mb)
 
-	fmop, err := path.ReportObjectPath("female", k)
+	femalePath := path.FemaleWeekAgoReportObject()
+	fmb, err := c.gcs.Get(ctx, femalePath)
 	if err != nil {
-		return fmt.Errorf("failed to get female object path: %v", err)
-	}
-	fmb, err := c.gcs.Get(ctx, fmop)
-	if err != nil {
-		return fmt.Errorf("failed to get feimage: %v", err)
+		return fmt.Errorf("failed to get image, path: %s, error: %v", femalePath, err)
 	}
 	images = append(images, fmb)
 

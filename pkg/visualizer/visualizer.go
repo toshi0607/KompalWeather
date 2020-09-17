@@ -85,11 +85,11 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 		}
 
 		if _, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName),
-			path.LogObjectPath(lastPagePNGFileName)); err != nil {
+			path.LogObject(lastPagePNGFileName)); err != nil {
 			v.log.Error("failed to upload PNG, error:", err)
 		}
 		if _, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName),
-			path.LogObjectPath(lastPageHTMLFileName)); err != nil {
+			path.LogObject(lastPageHTMLFileName)); err != nil {
 			v.log.Error("failed to upload HTML, error:", err)
 		}
 	}()
@@ -139,7 +139,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 
 	var files []string
 	if !hasMale {
-		target, err := path.ReportObjectPath("male", k)
+		target, err := path.ReportObject("male", k)
 		if err != nil {
 			return nil, fmt.Errorf("failed to build male target path: %v", err)
 		}
@@ -150,7 +150,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 		files = append(files, filePath)
 	}
 	if !hasFemale {
-		target, err := path.ReportObjectPath("female", k)
+		target, err := path.ReportObject("female", k)
 		if err != nil {
 			return nil, fmt.Errorf("failed to build female target path: %v", err)
 		}
@@ -165,7 +165,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 }
 
 func (v Visualizer) hasFile(ctx context.Context, k report.Kind) (bool, bool, error) {
-	malePath, err := path.ReportObjectPath("male", k)
+	malePath, err := path.ReportObject("male", k)
 	if err != nil {
 		return false, false, fmt.Errorf("failed to build male object path: %v", err)
 	}
@@ -173,7 +173,7 @@ func (v Visualizer) hasFile(ctx context.Context, k report.Kind) (bool, bool, err
 	if err != nil {
 		return false, false, fmt.Errorf("failed to check male object: %v", err)
 	}
-	femalePath, err := path.ReportObjectPath("female", k)
+	femalePath, err := path.ReportObject("female", k)
 	if err != nil {
 		return false, false, fmt.Errorf("failed to build female object path: %v", err)
 	}

@@ -8,10 +8,16 @@ import (
 
 type Kind string
 
+// To handle weekAgo kind transparently, keep period as fields in Report struct
+// New creates default and NewWithDate (or option) handles start date
+
 const (
 	DailyReport   = Kind("daily")
 	WeeklyReport  = Kind("weekly")
 	MonthlyReport = Kind("monthly")
+	// This is actually a daily report start from 7days ago.
+	// On the the other hand, it's a good variant if cloud scheduler isn't good at
+	// building a dynamic request body.
 	WeekAgoReport = Kind("weekAgo")
 )
 
