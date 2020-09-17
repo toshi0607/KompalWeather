@@ -83,16 +83,23 @@ func (c controller) Trend(ctx context.Context, k report.Kind) error {
 	case report.WeekAgoReport:
 		malePath = path.MaleWeekAgoReportObject()
 		femalePath = path.FemaleWeekAgoReportObject()
-		msg = "先週の今日の混雑傾向です！"
+		msg = "先週の今日の混雑傾向です！\n"
 	case report.WeeklyReport:
 		malePath = path.MaleWeeklyReportObject()
 		femalePath = path.FemaleWeeklyReportObject()
-		msg = "直近1週間の混雑傾向です！"
+		msg = "直近1週間の混雑傾向です！\n"
 	default:
 		err := fmt.Errorf("unexpected report kind: %s", k)
 		c.log.Error("unexpected report kind", err)
 		return err
 	}
+	msg += `縦軸の数字の意味はつぎのとおりです。
+0: 営業時間外です
+1: 空いてます
+2: 普通です
+3: 少し混んでます
+4: 満員です
+`
 
 	var images [][]byte
 	mb, err := c.gcs.Get(ctx, path.MaleWeekAgoReportObject())
