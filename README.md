@@ -33,6 +33,8 @@ If you have a feature request, please make an issue from [here](https://github.c
 
 * Cloud Run
 * Cloud Scheduler
+* Cloud Monitoring
+* Cloud Logging
 * Secret Manager
 * Cloud Build
 * Cloud Storage
