@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/toshi0607/kompal-weather/pkg/visualizer"
+	"github.com/toshi0607/kompal-weather/pkg/report"
 )
 
 const visualizerHandlerName = "visualizeHandler"
 
 type RequestBody struct {
-	ReportType visualizer.ReportType `json:"ReportType"`
+	ReportKind report.Kind `json:"ReportKind"`
 }
 
 type ResponseBody struct {
@@ -32,8 +32,8 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 			http.Error(w, "failed to read body", http.StatusBadRequest)
 			return
 		}
-		if !req.ReportType.IsValid() {
-			err := fmt.Errorf("invalid report type: %v", req.ReportType)
+		if !req.ReportKind.IsValid() {
+			err := fmt.Errorf("invalid report type: %v", req.ReportKind)
 			s.log.Info(err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
@@ -42,7 +42,7 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 		s.log.SetHandlerName(visualizerHandlerName)
 		s.log.Info("%s started", visualizerHandlerName)
 
-		files, err := s.visualizer.Save(ctx, req.ReportType)
+		files, err := s.visualizer.Save(ctx, req.ReportKind)
 		if err != nil {
 			s.log.Error("failed to save", err)
 			w.WriteHeader(http.StatusInternalServerError)

@@ -10,8 +10,9 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/logger"
 	"github.com/toshi0607/kompal-weather/pkg/monitoring"
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
+	"github.com/toshi0607/kompal-weather/pkg/path"
+	"github.com/toshi0607/kompal-weather/pkg/report"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
-	"github.com/toshi0607/kompal-weather/pkg/visualizer"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -76,26 +77,19 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	return result, nil
 }
 
-func (c controller) Trend(ctx context.Context, rt visualizer.ReportType) error {
+func (c controller) Trend(ctx context.Context, k report.Kind) error {
 	var images [][]byte
-	mop, err := visualizer.ObjectPath(visualizer.MaleFileName, rt)
-	c.log.Info("male object name %s", mop)
+	malePath := path.MaleWeekAgoReportObject()
+	mb, err := c.gcs.Get(ctx, path.MaleWeekAgoReportObject())
 	if err != nil {
-		return fmt.Errorf("failed to get male object path: %v", err)
-	}
-	mb, err := c.gcs.Get(ctx, mop)
-	if err != nil {
-		return fmt.Errorf("failed to get image: %v", err)
+		return fmt.Errorf("failed to get image, path: %s, error: %v", malePath, err)
 	}
 	images = append(images, mb)
 
-	fmop, err := visualizer.ObjectPath(visualizer.FemaleFileName, rt)
+	femalePath := path.FemaleWeekAgoReportObject()
+	fmb, err := c.gcs.Get(ctx, femalePath)
 	if err != nil {
-		return fmt.Errorf("failed to get female object path: %v", err)
-	}
-	fmb, err := c.gcs.Get(ctx, fmop)
-	if err != nil {
-		return fmt.Errorf("failed to get feimage: %v", err)
+		return fmt.Errorf("failed to get image, path: %s, error: %v", femalePath, err)
 	}
 	images = append(images, fmb)
 

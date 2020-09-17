@@ -6,6 +6,7 @@ import (
 
 	"github.com/sclevine/agouti"
 	"github.com/toshi0607/kompal-weather/pkg/logger"
+	"github.com/toshi0607/kompal-weather/pkg/report"
 )
 
 const (
@@ -165,7 +166,7 @@ func (p monitoringPage) oneMonthButton() *agouti.Selection {
 //
 // Page actions
 //
-func (p monitoringPage) download(rt ReportType) error {
+func (p monitoringPage) download(k report.Kind) error {
 	if err := p.settingToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click setting toggle button: %v", err)
 	}
@@ -175,21 +176,21 @@ func (p monitoringPage) download(rt ReportType) error {
 	}
 	time.Sleep(5 * time.Second)
 
-	switch rt {
-	case DailyReport:
+	switch k {
+	case report.DailyReport:
 		if err := p.sixHoursButton().Click(); err != nil {
 			return fmt.Errorf("failed to click six hours button: %v", err)
 		}
-	case WeeklyReport:
+	case report.WeekAgoReport:
 		if err := p.oneWeekButton().Click(); err != nil {
 			return fmt.Errorf("failed to click one week button: %v", err)
 		}
-	case MonthlyReport:
+	case report.MonthlyReport:
 		if err := p.oneMonthButton().Click(); err != nil {
 			return fmt.Errorf("failed to click one month button: %v", err)
 		}
 	}
-	p.log.Info("start downloading %s reports...", rt)
+	p.log.Info("start downloading %s reports...", k)
 
 	if err := p.maleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male 3 dots toggle button: %v", err)
