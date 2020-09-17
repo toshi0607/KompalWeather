@@ -84,11 +84,11 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 			v.log.Error("failed to save HTML, error:", err)
 		}
 
-		if _, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName),
+		if _, err := v.uploadFile(ctx, fmt.Sprintf("%s/%s", localPath, lastPagePNGFileName),
 			path.LogObject(lastPagePNGFileName)); err != nil {
 			v.log.Error("failed to upload PNG, error:", err)
 		}
-		if _, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName),
+		if _, err := v.uploadFile(ctx, fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName),
 			path.LogObject(lastPageHTMLFileName)); err != nil {
 			v.log.Error("failed to upload HTML, error:", err)
 		}
@@ -143,7 +143,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to build male target path: %v", err)
 		}
-		filePath, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, maleFileName), target)
+		filePath, err := v.uploadFile(ctx, fmt.Sprintf("%s/%s", localPath, maleFileName), target)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update male file: %v", err)
 		}
@@ -154,7 +154,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to build female target path: %v", err)
 		}
-		filePath, err := v.uploadFiles(ctx, fmt.Sprintf("%s/%s", localPath, femaleFileName), target)
+		filePath, err := v.uploadFile(ctx, fmt.Sprintf("%s/%s", localPath, femaleFileName), target)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update male file: %v", err)
 		}
@@ -205,7 +205,7 @@ func (v Visualizer) initDriver(localPath string) (*agouti.WebDriver, error) {
 	return driver, nil
 }
 
-func (v Visualizer) uploadFiles(ctx context.Context, source, target string) (string, error) {
+func (v Visualizer) uploadFile(ctx context.Context, source, target string) (string, error) {
 	f, err := os.Open(source)
 	if err != nil {
 		return "", fmt.Errorf("failed to open local file: %v", err)
