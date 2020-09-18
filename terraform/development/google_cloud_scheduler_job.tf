@@ -88,7 +88,7 @@ resource "google_cloud_scheduler_job" "daily_visualizer_dev" {
   }
 
   http_target {
-    body        = base64encode("{\"reportType\":\"daily\"}\n")
+    body        = base64encode("{\"reportKind\":\"daily\"}\n")
     http_method = "POST"
     uri         = "${google_cloud_run_service.kompal_weather_visualizer_dev.status.0.url}/visualize"
 
@@ -116,7 +116,7 @@ resource "google_cloud_scheduler_job" "weekly_visualizer_dev" {
   }
 
   http_target {
-    body        = base64encode("{\"reportType\":\"weekly\"}\n")
+    body        = base64encode("{\"reportKind\":\"weekly\"}\n")
     http_method = "POST"
     uri         = "${google_cloud_run_service.kompal_weather_visualizer_dev.status.0.url}/visualize"
 
@@ -144,7 +144,7 @@ resource "google_cloud_scheduler_job" "monthly_visualizer_dev" {
   }
 
   http_target {
-    body        = base64encode("{\"reportType\":\"monthly\"}\n")
+    body        = base64encode("{\"reportKind\":\"monthly\"}\n")
     http_method = "POST"
     uri         = "${google_cloud_run_service.kompal_weather_visualizer_dev.status.0.url}/visualize"
 
@@ -172,7 +172,7 @@ resource "google_cloud_scheduler_job" "week_ago_trend_dev" {
   }
 
   http_target {
-    body        = base64encode("{\"reportType\":\"weekAgo\"}\n")
+    body        = base64encode("{\"reportKind\":\"weekAgo\"}\n")
     http_method = "POST"
     uri         = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/trend"
 
@@ -200,7 +200,7 @@ resource "google_cloud_scheduler_job" "weekly_trend_dev" {
   }
 
   http_target {
-    body        = base64encode("{\"reportType\":\"weekly\"}\n")
+    body        = base64encode("{\"reportKind\":\"weekly\"}\n")
     http_method = "POST"
     uri         = "${google_cloud_run_service.kompal-weather-dev.status.0.url}/trend"
 
