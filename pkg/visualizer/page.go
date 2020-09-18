@@ -64,7 +64,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.googleOAuthButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click google OAuth button: %v", err)
 	}
-	time.Sleep(15 * time.Second)
+	time.Sleep(12 * time.Second)
 	t, err := p.page.Title()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get mail input page, title: %v", err)
@@ -77,7 +77,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.idNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click ID next button: %v", err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(6 * time.Second)
 	t2, err := p.page.Title()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pw input page, title: %v", err)
@@ -90,7 +90,7 @@ func (p loginPage) login(id, pw string) (*agouti.Page, error) {
 	if err := p.passwordNextButton().Click(); err != nil {
 		return nil, fmt.Errorf("failed to click password next button: %v", err)
 	}
-	time.Sleep(15 * time.Second)
+	time.Sleep(12 * time.Second)
 	t3, err := p.page.Title()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get logined page, title: %v", err)
@@ -123,13 +123,13 @@ func newMonitoringPage(p *agouti.Page, l logger.Logger) (*monitoringPage, error)
 //
 // Page components
 //
-func (p monitoringPage) settingToggleButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/button[2]")
-}
-
-func (p monitoringPage) oneColumnButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-1\"]/div/button[6]")
-}
+//func (p monitoringPage) settingToggleButton() *agouti.Selection {
+//	return p.page.FindByXPath("//*[@id=\"_0rif_sd-dashboard-toolbar\"]/button[2]")
+//}
+//
+//func (p monitoringPage) oneColumnButton() *agouti.Selection {
+//	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-1\"]/div/button[6]")
+//}
 
 func (p monitoringPage) maleThreeDotsToggleButton() *agouti.Selection {
 	return p.page.FindByXPath("//*[@id=\"main\"]/div/div/central-page-area/div/div/pcc-content-viewport/div/div/pangolin-home/cfc-router-outlet/div/sd-dashboard-page/div/div/div/sd-dashboard-root/sd-grid/div/div[1]/sd-chart-card/mat-card/mat-card-header/sd-chart-header/div/div/sd-icon")
@@ -167,15 +167,6 @@ func (p monitoringPage) oneMonthButton() *agouti.Selection {
 // Page actions
 //
 func (p monitoringPage) download(k report.Kind) error {
-	if err := p.settingToggleButton().Click(); err != nil {
-		return fmt.Errorf("failed to click setting toggle button: %v", err)
-	}
-	time.Sleep(5 * time.Second)
-	if err := p.oneColumnButton().Click(); err != nil {
-		return fmt.Errorf("failed to click one column button: %v", err)
-	}
-	time.Sleep(5 * time.Second)
-
 	switch k {
 	case report.DailyReport:
 		if err := p.sixHoursButton().Click(); err != nil {
@@ -195,7 +186,7 @@ func (p monitoringPage) download(k report.Kind) error {
 	if err := p.maleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male 3 dots toggle button: %v", err)
 	}
-	time.Sleep(4 * time.Second)
+	time.Sleep(3 * time.Second)
 	if err := p.malePNGDownloadButton().Click(); err != nil {
 		return fmt.Errorf("failed to click male png download button: %v", err)
 	}
@@ -204,7 +195,7 @@ func (p monitoringPage) download(k report.Kind) error {
 	if err := p.femaleThreeDotsToggleButton().Click(); err != nil {
 		return fmt.Errorf("failed to click female 3 dots toggle button: %v", err)
 	}
-	time.Sleep(4 * time.Second)
+	time.Sleep(3 * time.Second)
 	if err := p.femalePNGDownloadButton().Click(); err != nil {
 		return fmt.Errorf("failed to click female png download button: %v", err)
 	}
