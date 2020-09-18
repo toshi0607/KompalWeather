@@ -11,7 +11,7 @@ import (
 const visualizerHandlerName = "visualizeHandler"
 
 type RequestBody struct {
-	ReportKind report.Kind `json:"ReportKind"`
+	ReportKind report.Kind `json:"reportKind"`
 }
 
 type ResponseBody struct {
