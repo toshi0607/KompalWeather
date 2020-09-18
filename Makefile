@@ -26,8 +26,8 @@ tidy:
 lint:
 	golangci-lint run -v --tests ./...
 
-.PHONY: watch
-watch:
+.PHONY: w
+w:
 	curl -sS http://localhost:8080/watch -X POST
 
 .PHONY: trend

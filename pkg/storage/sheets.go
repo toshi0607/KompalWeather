@@ -116,7 +116,7 @@ func (s *Sheets) Save(ctx context.Context, st *status.Status) (*status.Status, e
 	}
 
 	if sheet.Properties.GridProperties.RowCount == uint(len(sheet.Rows)) {
-		if err := s.service.ExpandSheet(sheet, 0, 1000); err != nil {
+		if err := s.service.ExpandSheet(sheet, 1000, 6); err != nil {
 			return nil, fmt.Errorf("failed to expand the sheet: %v", err)
 		}
 	}
