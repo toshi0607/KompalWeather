@@ -181,6 +181,7 @@ func (p monitoringPage) download(k report.Kind) error {
 			return fmt.Errorf("failed to click one month button: %v", err)
 		}
 	}
+	time.Sleep(3 * time.Second)
 	p.log.Info("start downloading %s reports...", k)
 
 	if err := p.maleThreeDotsToggleButton().Click(); err != nil {

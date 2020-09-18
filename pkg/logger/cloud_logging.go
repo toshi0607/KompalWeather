@@ -67,7 +67,7 @@ func (l *CloudLogging) Info(format string, args ...interface{}) {
 
 func (l *CloudLogging) Error(msg string, err error) {
 	l.client.Logger(l.serviceName).Log(logging.Entry{
-		Severity: logging.Info,
+		Severity: logging.Error,
 		Payload: Message{
 			Msg:         msg,
 			Err:         err.Error(),
