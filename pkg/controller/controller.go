@@ -12,7 +12,6 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/path"
 	"github.com/toshi0607/kompal-weather/pkg/report"
-	"github.com/toshi0607/kompal-weather/pkg/status"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
 	"golang.org/x/sync/errgroup"
 )
@@ -47,15 +46,12 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	}
 	c.log.Info("fetched: %+v", *f)
 
-	var st *status.Status
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
-		s, err := c.storage.Save(ctx, f)
+		_, err := c.storage.Save(ctx, f)
 		if err != nil {
 			return fmt.Errorf("failed to save status: %v", err)
 		}
-		st = s
-		c.log.Info("saved: %+v", *st)
 		return nil
 	})
 	eg.Go(func() error {
