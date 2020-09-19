@@ -44,17 +44,27 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch kompal status: %v", err)
 	}
-	c.log.Info("fetched: %+v", *f)
+	c.log.Info("status fetched: %+v", *f)
 
-	st, err := c.storage.Save(ctx, f)
-	if err != nil {
+	eg, ctx := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		_, err := c.storage.Save(ctx, f)
+		if err != nil {
+			return fmt.Errorf("failed to save status: %v", err)
+		}
+		c.log.Info("status saved: %+v", *f)
+		return nil
+	})
+	eg.Go(func() error {
+		if err := c.monitor.CreatePoint(ctx, f); err != nil {
+			c.log.Error("failed to create point", err)
+			// Keep processing
+		}
+		return nil
+	})
+
+	if err := eg.Wait(); err != nil {
 		return nil, fmt.Errorf("failed to save status: %v", err)
-	}
-	c.log.Info("saved: %+v", *st)
-
-	if err := c.monitor.CreatePoint(ctx, st); err != nil {
-		c.log.Error("failed to create point", err)
-		// Keep processing
 	}
 
 	result, err := c.analyzer.Analyze(ctx)
@@ -63,14 +73,14 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	}
 	c.log.Info("result: %+v", *result)
 
-	eg, ctx := errgroup.WithContext(ctx)
+	eg2, ctx := errgroup.WithContext(ctx)
 	for _, n := range c.notifiers {
 		n := n
-		eg.Go(func() error {
+		eg2.Go(func() error {
 			return n.Notify(ctx, result)
 		})
 	}
-	if err := eg.Wait(); err != nil {
+	if err := eg2.Wait(); err != nil {
 		return nil, fmt.Errorf("failed to notify: %v", err)
 	}
 
