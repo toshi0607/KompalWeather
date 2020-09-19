@@ -73,7 +73,7 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	}
 	c.log.Info("result: %+v", *result)
 
-	eg2, ctx := errgroup.WithContext(ctx)
+	eg2, ctx := errgroup.WithContext(context.Background())
 	for _, n := range c.notifiers {
 		n := n
 		eg2.Go(func() error {
