@@ -12,6 +12,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/notifier"
 	"github.com/toshi0607/kompal-weather/pkg/path"
 	"github.com/toshi0607/kompal-weather/pkg/report"
+	"github.com/toshi0607/kompal-weather/pkg/status"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
 	"golang.org/x/sync/errgroup"
 )
@@ -46,15 +47,27 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	}
 	c.log.Info("fetched: %+v", *f)
 
-	st, err := c.storage.Save(ctx, f)
-	if err != nil {
-		return nil, fmt.Errorf("failed to save status: %v", err)
-	}
-	c.log.Info("saved: %+v", *st)
+	var st *status.Status
+	eg, ctx := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		s, err := c.storage.Save(ctx, f)
+		if err != nil {
+			return fmt.Errorf("failed to save status: %v", err)
+		}
+		st = s
+		c.log.Info("saved: %+v", *st)
+		return nil
+	})
+	eg.Go(func() error {
+		if err := c.monitor.CreatePoint(ctx, f); err != nil {
+			c.log.Error("failed to create point", err)
+			// Keep processing
+		}
+		return nil
+	})
 
-	if err := c.monitor.CreatePoint(ctx, st); err != nil {
-		c.log.Error("failed to create point", err)
-		// Keep processing
+	if err := eg.Wait(); err != nil {
+		return nil, fmt.Errorf("failed to save status: %v", err)
 	}
 
 	result, err := c.analyzer.Analyze(ctx)
@@ -63,14 +76,14 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	}
 	c.log.Info("result: %+v", *result)
 
-	eg, ctx := errgroup.WithContext(ctx)
+	eg2, ctx := errgroup.WithContext(ctx)
 	for _, n := range c.notifiers {
 		n := n
-		eg.Go(func() error {
+		eg2.Go(func() error {
 			return n.Notify(ctx, result)
 		})
 	}
-	if err := eg.Wait(); err != nil {
+	if err := eg2.Wait(); err != nil {
 		return nil, fmt.Errorf("failed to notify: %v", err)
 	}
 
