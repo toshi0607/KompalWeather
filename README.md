@@ -29,6 +29,8 @@ If you have a feature request, please make an issue from [here](https://github.c
 
 ## Architecture
 
+![image dependency](./docs/images/architecture.png)
+
 ### Cloud
 
 * Cloud Run
@@ -39,6 +41,8 @@ If you have a feature request, please make an issue from [here](https://github.c
 * Cloud Build
 * Cloud Storage
 
-![image dependency](./terraform/development/kompal-graph.jpg)
+### Dependency
+
+![image dependency](./terraform/development/kompal-graph.png)
 
 Managed by [Terraform](https://github.com/toshi0607/KompalWeather/tree/master/terraform/development)
