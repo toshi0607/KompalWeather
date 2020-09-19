@@ -44,7 +44,7 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch kompal status: %v", err)
 	}
-	c.log.Info("fetched: %+v", *f)
+	c.log.Info("status fetched: %+v", *f)
 
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
@@ -52,6 +52,7 @@ func (c controller) Watch(ctx context.Context) (*analyzer.Result, error) {
 		if err != nil {
 			return fmt.Errorf("failed to save status: %v", err)
 		}
+		c.log.Info("status saved: %+v", *f)
 		return nil
 	})
 	eg.Go(func() error {
