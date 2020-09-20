@@ -136,7 +136,7 @@ func (p monitoringPage) maleThreeDotsToggleButton() *agouti.Selection {
 }
 
 func (p monitoringPage) malePNGDownloadButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_1rif_mat-menu-panel-5\"]/div/div/button[4]")
+	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-3\"]/div/div/button[4]")
 }
 
 func (p monitoringPage) femaleThreeDotsToggleButton() *agouti.Selection {
@@ -144,7 +144,7 @@ func (p monitoringPage) femaleThreeDotsToggleButton() *agouti.Selection {
 }
 
 func (p monitoringPage) femalePNGDownloadButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_1rif_mat-menu-panel-6\"]/div/div/button[4]")
+	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-4\"]/div/div/button[4]")
 }
 
 func (p monitoringPage) sixHoursButton() *agouti.Selection {
