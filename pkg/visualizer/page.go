@@ -132,19 +132,19 @@ func newMonitoringPage(p *agouti.Page, l logger.Logger) (*monitoringPage, error)
 //}
 
 func (p monitoringPage) maleThreeDotsToggleButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"main\"]/div/div/central-page-area/div/div/pcc-content-viewport/div/div/pangolin-home/cfc-router-outlet/div/sd-dashboard-page/div/div/div/sd-dashboard-root/sd-grid/div/div[1]/sd-chart-card/mat-card/mat-card-header/sd-chart-header/div/div/sd-icon")
+	return p.page.FindByXPath("//*[@id=\"main\"]/div/div/central-page-area/div/div/pcc-content-viewport/div/div/pangolin-home/cfc-router-outlet/div/sd-dashboard-page/div/div/div/sd-dashboard-root/sd-grid/div/div[1]/sd-chart-card/mat-card/mat-card-header/sd-chart-header/div/div/button[3]")
 }
 
 func (p monitoringPage) malePNGDownloadButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-3\"]/div/div/button[4]")
+	return p.page.FindByXPath("//*[@id=\"_1rif_mat-menu-panel-5\"]/div/div/button[4]")
 }
 
 func (p monitoringPage) femaleThreeDotsToggleButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"main\"]/div/div/central-page-area/div/div/pcc-content-viewport/div/div/pangolin-home/cfc-router-outlet/div/sd-dashboard-page/div/div/div/sd-dashboard-root/sd-grid/div/div[2]/sd-chart-card/mat-card/mat-card-header/sd-chart-header/div/div/sd-icon")
+	return p.page.FindByXPath("//*[@id=\"main\"]/div/div/central-page-area/div/div/pcc-content-viewport/div/div/pangolin-home/cfc-router-outlet/div/sd-dashboard-page/div/div/div/sd-dashboard-root/sd-grid/div/div[2]/sd-chart-card/mat-card/mat-card-header/sd-chart-header/div/div/button[3]")
 }
 
 func (p monitoringPage) femalePNGDownloadButton() *agouti.Selection {
-	return p.page.FindByXPath("//*[@id=\"_0rif_mat-menu-panel-4\"]/div/div/button[4]")
+	return p.page.FindByXPath("//*[@id=\"_1rif_mat-menu-panel-6\"]/div/div/button[4]")
 }
 
 func (p monitoringPage) sixHoursButton() *agouti.Selection {
