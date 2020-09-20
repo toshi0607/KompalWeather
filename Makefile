@@ -33,12 +33,12 @@ w:
 .PHONY: trend
 trend:
 	curl -sSi http://localhost:8080/trend -X POST \
-	  --data '{"reportType": "weekAgo"}'
+	  --data '{"reportKind": "weekAgo"}'
 
 .PHONY: v
 v:
 	curl -sSi http://localhost:8080/visualize -X POST \
-	  --data '{"reportType": "daily"}'
+	  --data '{"reportKind": "daily"}'
 
 .PHONY: dr
 dr:
