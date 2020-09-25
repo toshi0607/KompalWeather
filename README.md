@@ -47,6 +47,20 @@ If you have a feature request, please make an issue from [here](https://github.c
 
 Managed by [Terraform](https://github.com/toshi0607/KompalWeather/tree/master/terraform/development)
 
+## Use cases
+
+### Watch
+
+![image dependency](./docs/images/watch.png)
+
+### Visualize
+
+![image dependency](./docs/images/visualize.png)
+
+### Trend
+
+![image dependency](./docs/images/trend.png)
+
 ## Talks
 
 * [KompalWeather: Serverless Sauna Service with Cloud Run](https://speakerdeck.com/toshi0607/kompalweather-serverless-sauna-service-with-cloud-run)
