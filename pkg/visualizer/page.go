@@ -1,6 +1,7 @@
 package visualizer
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -172,7 +173,7 @@ func (p monitoringPage) download(k report.Kind) error {
 		if err := p.sixHoursButton().Click(); err != nil {
 			return fmt.Errorf("failed to click six hours button: %v", err)
 		}
-	case report.WeekAgoReport:
+	case report.WeeklyReport:
 		if err := p.oneWeekButton().Click(); err != nil {
 			return fmt.Errorf("failed to click one week button: %v", err)
 		}
@@ -180,6 +181,9 @@ func (p monitoringPage) download(k report.Kind) error {
 		if err := p.oneMonthButton().Click(); err != nil {
 			return fmt.Errorf("failed to click one month button: %v", err)
 		}
+	default:
+		p.log.Info("report type: %s is not supported to download", k)
+		return errors.New("invalid report type")
 	}
 	time.Sleep(3 * time.Second)
 	p.log.Info("start downloading %s reports...", k)
