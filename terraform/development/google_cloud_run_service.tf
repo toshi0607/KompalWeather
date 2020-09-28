@@ -3,7 +3,8 @@ resource "google_cloud_run_service" "kompal-weather-dev" {
   name     = "kompal-weather-dev2"
   location = var.gcp_region
 
-  autogenerate_revision_name = false
+  // When false, changing configuration fails because the run service try to created a service with the existing name
+  autogenerate_revision_name = true
 
   traffic {
     latest_revision = true
@@ -64,7 +65,7 @@ resource "google_cloud_run_service" "kompal-weather-dev" {
         }
         env {
           name  = "VERSION"
-          value = "0.1.0"
+          value = "0.2.0"
         }
         env {
           name  = "SERVICE_NAME"
@@ -102,7 +103,7 @@ resource "google_cloud_run_service" "kompal_weather_visualizer_dev" {
   name     = "kompal-weather-visualizer-dev"
   location = var.gcp_region
 
-  autogenerate_revision_name = false
+  autogenerate_revision_name = true
 
   traffic {
     latest_revision = true
@@ -135,7 +136,7 @@ resource "google_cloud_run_service" "kompal_weather_visualizer_dev" {
         }
         env {
           name  = "VERSION"
-          value = "0.1.0"
+          value = "0.2.0"
         }
         env {
           name  = "ENVIRONMENT"
