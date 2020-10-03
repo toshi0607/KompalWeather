@@ -5,7 +5,7 @@ go 1.14
 require (
 	cloud.google.com/go v0.66.0
 	cloud.google.com/go/logging v1.1.0
-	cloud.google.com/go/storage v1.11.0
+	cloud.google.com/go/storage v1.12.0
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
 	github.com/azr/backoff v0.0.0-20160115115103-53511d3c7330 // indirect
@@ -20,7 +20,6 @@ require (
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/sys v0.0.0-20200831180312-196b9ba8737a // indirect
-	google.golang.org/genproto v0.0.0-20200914193844-75d14daec038
+	google.golang.org/genproto v0.0.0-20200921151605-7abf4a1a14d5
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20191122095212-08231195c43b
 )
