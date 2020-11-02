@@ -3,8 +3,8 @@ module github.com/toshi0607/kompal-weather
 go 1.14
 
 require (
-	cloud.google.com/go v0.69.1
-	cloud.google.com/go/logging v1.1.0
+	cloud.google.com/go v0.70.0
+	cloud.google.com/go/logging v1.1.1
 	cloud.google.com/go/storage v1.12.0
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
@@ -20,6 +20,6 @@ require (
 	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	google.golang.org/genproto v0.0.0-20201014134559-03b6142f0dc9
+	google.golang.org/genproto v0.0.0-20201019141844-1ed22bb0c154
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20191122095212-08231195c43b
 )
