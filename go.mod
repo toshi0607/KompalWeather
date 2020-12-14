@@ -3,7 +3,7 @@ module github.com/toshi0607/kompal-weather
 go 1.14
 
 require (
-	cloud.google.com/go v0.71.0
+	cloud.google.com/go v0.74.0
 	cloud.google.com/go/logging v1.1.2
 	cloud.google.com/go/storage v1.12.0
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
@@ -14,12 +14,12 @@ require (
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/golangci/golangci-lint v1.32.1
-	github.com/google/go-cmp v0.5.3
+	github.com/google/go-cmp v0.5.4
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sclevine/agouti v3.0.0+incompatible
-	golang.org/x/net v0.0.0-20201026091529-146b70c837a4
-	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
+	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
-	google.golang.org/genproto v0.0.0-20201106154455-f9bfe239b0ba
+	google.golang.org/genproto v0.0.0-20201210142538-e3217bee35cc
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20191122095212-08231195c43b
 )
