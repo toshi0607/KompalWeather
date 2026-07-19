@@ -4,9 +4,10 @@ import (
 	"errors"
 	"fmt"
 
+	"context"
+
 	"github.com/toshi0607/kompal-weather/pkg/status"
 	"github.com/toshi0607/kompal-weather/pkg/storage"
-	"golang.org/x/net/context"
 )
 
 type analyzer struct {

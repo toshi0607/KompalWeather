@@ -3,7 +3,7 @@ package gcs
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"cloud.google.com/go/storage"
 )
@@ -59,7 +59,7 @@ func (g *GCS) Get(ctx context.Context, path string) ([]byte, error) {
 			fmt.Print(err)
 		}
 	}()
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read object: %v", err)
 	}

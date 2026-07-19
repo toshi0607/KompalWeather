@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -46,7 +45,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 		return nil, nil
 	}
 
-	localPath, err := ioutil.TempDir("", fmt.Sprintf("%v", time.Now().Unix()))
+	localPath, err := os.MkdirTemp("", fmt.Sprintf("%v", time.Now().Unix()))
 	v.log.Info("localPath: %s", localPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create tmp dir: %v", err)
@@ -80,7 +79,7 @@ func (v Visualizer) Save(ctx context.Context, k report.Kind) ([]string, error) {
 			v.log.Error("failed to get HTML string, error:", err)
 		}
 		hb := []byte(html)
-		if err := ioutil.WriteFile(fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName), hb, 0644); err != nil {
+		if err := os.WriteFile(fmt.Sprintf("%s/%s", localPath, lastPageHTMLFileName), hb, 0644); err != nil {
 			v.log.Error("failed to save HTML, error:", err)
 		}
 
