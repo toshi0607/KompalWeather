@@ -9,7 +9,7 @@ import (
 	"github.com/toshi0607/kompal-weather/pkg/status"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 )
 
 // Secret represents a monitor
