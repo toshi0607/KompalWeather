@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	cloud.google.com/go/logging v1.19.0
 	cloud.google.com/go/monitoring v1.30.0
-	cloud.google.com/go/secretmanager v1.20.0
+	cloud.google.com/go/secretmanager v1.21.0
 	cloud.google.com/go/storage v1.64.0
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/golang/protobuf v1.5.4
