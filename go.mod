@@ -1,6 +1,6 @@
 module github.com/toshi0607/kompal-weather
 
-go 1.25.0
+go 1.26.0
 
 require (
 	cloud.google.com/go/logging v1.19.1
@@ -12,7 +12,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sclevine/agouti v3.0.0+incompatible
-	golang.org/x/oauth2 v0.36.0
+	golang.org/x/oauth2 v0.37.0
 	golang.org/x/sync v0.22.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260715232425-e75dac1f907d
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20230915040305-7677e8164883
