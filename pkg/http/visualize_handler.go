@@ -34,7 +34,7 @@ func (s *VisualizeServer) visualizeHandler() http.Handler {
 		}
 		if !req.ReportKind.IsValid() {
 			err := fmt.Errorf("invalid report type: %v", req.ReportKind)
-			s.log.Info(err.Error())
+			s.log.Info("%s", err.Error())
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
